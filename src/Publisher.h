@@ -1,0 +1,170 @@
+#ifndef PUBLISHER_H
+#define PUBLISHER_H
+
+#include <iostream>
+
+#include <fastdds/dds/publisher/DataWriterListener.hpp>
+#include <fastdds/dds/topic/TypeSupport.hpp>
+#include <fastdds/dds/domain/DomainParticipant.hpp>
+
+#include <fastrtps/attributes/ParticipantAttributes.h>
+#include <fastrtps/attributes/PublisherAttributes.h>
+#include <fastdds/dds/domain/DomainParticipantFactory.hpp>
+#include <fastdds/dds/publisher/Publisher.hpp>
+#include <fastdds/dds/publisher/qos/PublisherQos.hpp>
+#include <fastdds/dds/publisher/DataWriter.hpp>
+#include <fastdds/dds/publisher/qos/DataWriterQos.hpp>
+
+template <class MsgType, class PubSubType>
+class Publisher {
+
+private:
+	eprosima::fastdds::dds::DomainParticipant* participant_;
+	eprosima::fastdds::dds::Publisher* publisher_;
+	eprosima::fastdds::dds::Topic* topic_;
+	eprosima::fastdds::dds::DataWriter* writer_;
+	eprosima::fastdds::dds::TypeSupport type_;
+
+	bool stop_;
+
+	class PubListener : public eprosima::fastdds::dds::DataWriterListener
+	{
+	public:
+
+		PubListener()
+			: matched_(0)
+			, firstConnected_(false)
+		{
+		}
+
+		~PubListener() override
+		{
+		}
+
+		void on_publication_matched(
+			eprosima::fastdds::dds::DataWriter* writer,
+			const eprosima::fastdds::dds::PublicationMatchedStatus& info) override {
+			if (info.current_count_change == 1) {
+				matched_ = info.total_count;
+				firstConnected_ = true;
+				std::cout << "Publisher matched." << std::endl;
+			}
+			else if (info.current_count_change == -1) {
+				matched_ = info.total_count;
+				std::cout << "Publisher unmatched." << std::endl;
+			}
+			else {
+				std::cout << info.current_count_change
+					<< " is not a valid value for PublicationMatchedStatus current count change" << std::endl;
+			}
+		}
+		int matched_;
+
+		bool firstConnected_;
+	}
+	listener_;
+
+public:
+	Publisher(const char* topic, const char* messageType, PubSubType* type)
+		: _topicName(topic)
+		, _messageName(messageType)
+		, participant_(nullptr)
+		, publisher_(nullptr)
+		, topic_(nullptr)
+		, writer_(nullptr)
+		, type_(type) {
+	};
+
+	~Publisher() {
+		if (writer_ != nullptr) {
+			publisher_->delete_datawriter(writer_);
+		}
+		if (publisher_ != nullptr) {
+			participant_->delete_publisher(publisher_);
+		}
+		if (topic_ != nullptr) {
+			participant_->delete_topic(topic_);
+		}
+		eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
+	}
+
+	const char* getTopic() { return _topicName; };
+	const char* getMessageType() {return _messageName; };
+
+	bool init() {
+		if (_initialized) {
+			return false;
+		}
+		std::cout << "Initializing Publisher" << std::endl;
+
+		eprosima::fastdds::dds::DomainParticipantQos pqos = eprosima::fastdds::dds::PARTICIPANT_QOS_DEFAULT;
+		pqos.name("Participant_pub");
+		auto factory = eprosima::fastdds::dds::DomainParticipantFactory::get_instance();
+
+		participant_ = factory->create_participant(0, pqos);
+
+		if (participant_ == nullptr) {
+			return false;
+		}
+
+		//REGISTER THE TYPE
+		type_.register_type(participant_);
+
+		//CREATE THE PUBLISHER
+		eprosima::fastdds::dds::PublisherQos pubqos = eprosima::fastdds::dds::PUBLISHER_QOS_DEFAULT;
+
+		publisher_ = participant_->create_publisher(
+			pubqos,
+			nullptr);
+
+		if (publisher_ == nullptr) {
+			return false;
+		}
+
+		//CREATE THE TOPIC
+		eprosima::fastdds::dds::TopicQos tqos = eprosima::fastdds::dds::TOPIC_QOS_DEFAULT;
+
+		topic_ = participant_->create_topic(
+			_topicName,
+			_messageName,
+			tqos);
+
+		if (topic_ == nullptr) {
+			return false;
+		}
+
+		// CREATE THE WRITER
+		eprosima::fastdds::dds::DataWriterQos wqos = eprosima::fastdds::dds::DATAWRITER_QOS_DEFAULT;
+
+		writer_ = publisher_->create_datawriter(
+			topic_,
+			wqos,
+			&listener_);
+
+		if (writer_ == nullptr) {
+			return false;
+		}
+
+		_initialized = true;
+		return true;
+	}
+
+	bool publish(MsgType msg) {
+		if (!_initialized) {
+			return false;
+		}
+		if (listener_.matched_ > 0) {
+			writer_->write(&msg);
+			return true;
+		}
+		return false;
+	}
+
+protected:
+	bool _initialized = false;
+	const char* _topicName;
+	const char* _messageName;
+
+};
+
+#endif //PUBLISHER_H
