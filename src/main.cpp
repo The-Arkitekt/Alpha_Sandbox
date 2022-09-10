@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "TextMessageNode.h"
+#include "nodes/TextMessageNode/TextMessageNode.h"
 
 int main(int argc, char** argv) {
 

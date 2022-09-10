@@ -29,9 +29,9 @@ endif()
 
 # include the HelloWorld Topic files
 message(STATUS "Configuring publisher/subscriber example...")
-file(GLOB Message_SOURCES_CXX "src/*.cxx")
+file(GLOB Message_SOURCES_CXX "messages/*/*.cxx")
 set(SOURCE_EXE  src/main.cpp 
-                src/TextMessageNode.cpp)
+                src/nodes/TextMessageNode/TextMessageNode.cpp)
 
 # add all source files needed to build the publisher executable, and links the executable and the library together
 add_executable(main ${SOURCE_EXE} ${Message_SOURCES_CXX})

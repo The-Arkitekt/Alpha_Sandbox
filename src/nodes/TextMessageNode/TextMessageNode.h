@@ -1,8 +1,8 @@
-#include "Node.h"
-#include "Publisher.h"
-#include "Subscriber.h"
+#include "../../base/Node.h"
+#include "../../base/Publisher.h"
+#include "../../base/Subscriber.h"
 
-#include "TextMessagePubSubTypes.h"
+#include "../../../messages/TextMessage/TextMessagePubSubTypes.h"
 
 class TextMessageNode : public Node {
 public:
