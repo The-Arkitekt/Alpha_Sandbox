@@ -3,9 +3,9 @@
 #include "TextMessageNode.h"
 
 TextMessageNode::TextMessageNode() 
-	: textMessagePublisher_(nullptr)
+	: Node()
+	, textMessagePublisher_(nullptr)
 	, textMessageSubscriber_(nullptr)
-	, initialized_(false)
 {}
 
 TextMessageNode::~TextMessageNode() {
@@ -18,6 +18,7 @@ bool TextMessageNode::init() {
 	if (initialized_) {
 		return false;
 	}
+	std::cout << "Node ID: " << getNodeID() << std::endl;
 
 	textMessagePublisher_ = new Publisher<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
 	textMessageSubscriber_ = new Subscriber<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
@@ -26,6 +27,13 @@ bool TextMessageNode::init() {
 	textMessageSubscriber_->init();
 
 	initialized_ = true;
+	return true;
+}
+
+bool TextMessageNode::standby() {
+	if (!initialized_) {
+		return false;
+	}
 	return true;
 }
 

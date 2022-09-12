@@ -9,11 +9,10 @@ public:
 	TextMessageNode();
 	~TextMessageNode();
 	bool init();
+	bool standby();
 	bool run();
 
 private:
-	bool initialized_;
-
 	Publisher<TextMessage, TextMessagePubSubType>* textMessagePublisher_;
 	Subscriber<TextMessage, TextMessagePubSubType>* textMessageSubscriber_;
 };
