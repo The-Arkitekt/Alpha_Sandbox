@@ -22,8 +22,6 @@ private:
     eprosima::fastdds::dds::DataReader* reader_;
     eprosima::fastdds::dds::TypeSupport type_;
 
-
-
     class SubListener : public eprosima::fastdds::dds::DataReaderListener {
     public:
 
@@ -44,7 +42,7 @@ private:
                     samples_++;
                     
                     // add message to buffer
-                    _msgBuf.push_back(msg_);
+                    msgBuf_.push_back(msg_);
                 }
             }
         }
@@ -67,17 +65,19 @@ private:
             }
         }
 
-        MsgType msg_;
-        std::list<MsgType> _msgBuf;
+        std::list<MsgType> msgBuf_;
         int matched_;
         std::atomic_int samples_;
+    private:
+        MsgType msg_;
     }
     listener_;
 
 public:
-	Subscriber(const char* topic, const char* messageType, PubSubType* type)
-        : _topicName(topic)
-        , _messageName(messageType)
+    Subscriber(const char* topic, const char* messageType, PubSubType* type)
+        : initialized_(false)
+        , topicName_(topic)
+        , messageName_(messageType)
         , participant_(nullptr)
         , subscriber_(nullptr)
         , topic_(nullptr)
@@ -98,18 +98,18 @@ public:
         eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
     }
 
-	const char* getTopic() { return _topicName; };
-	const char* getMessageType() { return _messageName; };
-    int getNumMessages() { return listener_._msgBuf.size(); };
+	const char* getTopic() { return topicName_; };
+	const char* getMessageType() { return messageName_; };
+    int getNumMessages() { return listener_.msgBuf_.size(); };
 
     MsgType popOldestMessage() {
-        MsgType ret = listener_._msgBuf.front();
-        listener_._msgBuf.pop_front();
+        MsgType ret = listener_.msgBuf_.front();
+        listener_.msgBuf_.pop_front();
         return ret;
     }
 
 	bool init() {
-		if (_initialized) {
+		if (initialized_) {
 			return false;
 		}
 
@@ -139,8 +139,8 @@ public:
         eprosima::fastdds::dds::TopicQos tqos = eprosima::fastdds::dds::TOPIC_QOS_DEFAULT;
 
         topic_ = participant_->create_topic(
-            _topicName,
-            _messageName,
+            topicName_,
+            messageName_,
             tqos);
 
         if (topic_ == nullptr) {
@@ -156,12 +156,12 @@ public:
         if (reader_ == nullptr) {
             return false;
         }
-		_initialized = true;
+		initialized_ = true;
 		return true;
 	};
 
 protected:
-	bool _initialized = false;
-	const char* _topicName;
-	const char* _messageName;
+	bool initialized_;
+	const char* topicName_;
+	const char* messageName_;
 };

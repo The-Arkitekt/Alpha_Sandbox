@@ -25,8 +25,6 @@ private:
 	eprosima::fastdds::dds::DataWriter* writer_;
 	eprosima::fastdds::dds::TypeSupport type_;
 
-	bool stop_;
-
 	class PubListener : public eprosima::fastdds::dds::DataWriterListener
 	{
 	public:
@@ -66,8 +64,9 @@ private:
 
 public:
 	Publisher(const char* topic, const char* messageType, PubSubType* type)
-		: _topicName(topic)
-		, _messageName(messageType)
+		: initialized_(false)
+		, topicName_(topic)
+		, messageName_(messageType)
 		, participant_(nullptr)
 		, publisher_(nullptr)
 		, topic_(nullptr)
@@ -88,11 +87,11 @@ public:
 		eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
 	}
 
-	const char* getTopic() { return _topicName; };
-	const char* getMessageType() {return _messageName; };
+	const char* getTopic() { return topicName_; };
+	const char* getMessageType() {return messageName_; };
 
 	bool init() {
-		if (_initialized) {
+		if (initialized_) {
 			return false;
 		}
 		std::cout << "Initializing Publisher" << std::endl;
@@ -125,8 +124,8 @@ public:
 		eprosima::fastdds::dds::TopicQos tqos = eprosima::fastdds::dds::TOPIC_QOS_DEFAULT;
 
 		topic_ = participant_->create_topic(
-			_topicName,
-			_messageName,
+			topicName_,
+			messageName_,
 			tqos);
 
 		if (topic_ == nullptr) {
@@ -145,12 +144,12 @@ public:
 			return false;
 		}
 
-		_initialized = true;
+		initialized_ = true;
 		return true;
 	}
 
 	bool publish(MsgType msg) {
-		if (!_initialized) {
+		if (!initialized_) {
 			return false;
 		}
 		if (listener_.matched_ > 0) {
@@ -161,10 +160,9 @@ public:
 	}
 
 protected:
-	bool _initialized = false;
-	const char* _topicName;
-	const char* _messageName;
-
+	bool initialized_;
+	const char* topicName_;
+	const char* messageName_;
 };
 
 #endif //PUBLISHER_H

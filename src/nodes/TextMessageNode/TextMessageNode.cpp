@@ -2,34 +2,35 @@
 
 #include "TextMessageNode.h"
 
-TextMessageNode::TextMessageNode() {
-	_textMessagePublisher = nullptr;
-	_textMessageSubscriber = nullptr;
-}
+TextMessageNode::TextMessageNode() 
+	: textMessagePublisher_(nullptr)
+	, textMessageSubscriber_(nullptr)
+	, initialized_(false)
+{}
 
 TextMessageNode::~TextMessageNode() {
-	if (_initialized) {
-		delete(_textMessagePublisher);
+	if (initialized_) {
+		delete(textMessagePublisher_);
 	}
 }
 
 bool TextMessageNode::init() {
-	if (_initialized) {
+	if (initialized_) {
 		return false;
 	}
 
-	_textMessagePublisher = new Publisher<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
-	_textMessageSubscriber = new Subscriber<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
+	textMessagePublisher_ = new Publisher<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
+	textMessageSubscriber_ = new Subscriber<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
 
-	_textMessagePublisher->init();
-	_textMessageSubscriber->init();
+	textMessagePublisher_->init();
+	textMessageSubscriber_->init();
 
-	_initialized = true;
+	initialized_ = true;
 	return true;
 }
 
 bool TextMessageNode::run() {
-	if (!_initialized) {
+	if (!initialized_) {
 		return false;
 	}
 
@@ -42,15 +43,15 @@ bool TextMessageNode::run() {
 
 	while (sent < samples) {
 		
-		if (_textMessagePublisher->publish(tm_)) {
+		if (textMessagePublisher_->publish(tm_)) {
 			sent++;
 			std::cout << "Message: " << tm_.message() << " with index: " << tm_.index()
 				<< " SENT" << std::endl;
 			tm_.index(tm_.index() + 1);
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-		while (_textMessageSubscriber->getNumMessages() > 0) {
-			TextMessage received = _textMessageSubscriber->popOldestMessage();
+		while (textMessageSubscriber_->getNumMessages() > 0) {
+			TextMessage received = textMessageSubscriber_->popOldestMessage();
 			std::cout << "Message: " << received.message() << ", with index: " << received.index()
 				<< " RECEIVED" << std::endl;
 		}

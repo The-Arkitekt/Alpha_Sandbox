@@ -12,6 +12,8 @@ public:
 	bool run();
 
 private:
-	Publisher<TextMessage, TextMessagePubSubType>* _textMessagePublisher;
-	Subscriber<TextMessage, TextMessagePubSubType>* _textMessageSubscriber;
+	bool initialized_;
+
+	Publisher<TextMessage, TextMessagePubSubType>* textMessagePublisher_;
+	Subscriber<TextMessage, TextMessagePubSubType>* textMessageSubscriber_;
 };
