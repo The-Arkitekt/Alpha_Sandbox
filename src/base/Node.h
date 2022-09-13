@@ -6,12 +6,5 @@ public:
 	bool virtual run()     = 0;
 
 protected:
-	Node();
-	int getNodeID();
-
-	bool initialized_;
-
-private:
-	static std::atomic_int _counter_;
-	std::atomic_int nodeID_;
+	bool initialized_ = false;
 };

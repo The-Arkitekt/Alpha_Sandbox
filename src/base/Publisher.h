@@ -94,7 +94,6 @@ public:
 		if (initialized_) {
 			return false;
 		}
-		std::cout << "Initializing Publisher" << std::endl;
 
 		eprosima::fastdds::dds::DomainParticipantQos pqos = eprosima::fastdds::dds::PARTICIPANT_QOS_DEFAULT;
 		pqos.name("Participant_pub");

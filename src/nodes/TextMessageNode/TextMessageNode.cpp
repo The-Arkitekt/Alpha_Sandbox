@@ -3,8 +3,7 @@
 #include "TextMessageNode.h"
 
 TextMessageNode::TextMessageNode() 
-	: Node()
-	, textMessagePublisher_(nullptr)
+	: textMessagePublisher_(nullptr)
 	, textMessageSubscriber_(nullptr)
 {}
 
@@ -18,8 +17,6 @@ bool TextMessageNode::init() {
 	if (initialized_) {
 		return false;
 	}
-	std::cout << "Node ID: " << getNodeID() << std::endl;
-
 	textMessagePublisher_ = new Publisher<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
 	textMessageSubscriber_ = new Subscriber<TextMessage, TextMessagePubSubType>("TextMessageTopic", "TextMessage", new TextMessagePubSubType());
 
@@ -50,7 +47,6 @@ bool TextMessageNode::run() {
 	uint32_t sent = 0;
 
 	while (sent < samples) {
-		
 		if (textMessagePublisher_->publish(tm_)) {
 			sent++;
 			std::cout << "Message: " << tm_.message() << " with index: " << tm_.index()
@@ -64,7 +60,6 @@ bool TextMessageNode::run() {
 				<< " RECEIVED" << std::endl;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-
 	}
 	return true;
 }
