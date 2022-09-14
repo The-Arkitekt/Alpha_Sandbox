@@ -1,2 +1,5 @@
 build/*
 build/
+
+messages/*/*.cxx
+messages/*/*.h

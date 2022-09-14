@@ -1,3 +1,6 @@
+#ifndef SUBSCRIBER_H
+#define SUBSCRIBER_H
+
 #include <iostream>
 
 #include <fastdds/dds/domain/DomainParticipant.hpp>
@@ -52,11 +55,11 @@ private:
             const eprosima::fastdds::dds::SubscriptionMatchedStatus& info) override {
             
             if (info.current_count_change == 1) {
-                matched_ = info.total_count;
+                matched_ = info.current_count;
                 std::cout << "Subscriber matched." << std::endl;
             }
             else if (info.current_count_change == -1) {
-                matched_ = info.total_count;
+                matched_ = info.current_count;
                 std::cout << "Subscriber unmatched." << std::endl;
             }
             else {
@@ -98,8 +101,6 @@ public:
         eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
     }
 
-	const char* getTopic() { return topicName_; };
-	const char* getMessageType() { return messageName_; };
     int getNumMessages() { return listener_.msgBuf_.size(); };
 
     MsgType popOldestMessage() {
@@ -165,3 +166,5 @@ protected:
 	const char* topicName_;
 	const char* messageName_;
 };
+
+#endif // SUBSCRIBER_H

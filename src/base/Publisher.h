@@ -2,6 +2,7 @@
 #define PUBLISHER_H
 
 #include <iostream>
+#include <atomic>
 
 #include <fastdds/dds/publisher/DataWriterListener.hpp>
 #include <fastdds/dds/topic/TypeSupport.hpp>
@@ -31,7 +32,6 @@ private:
 
 		PubListener()
 			: matched_(0)
-			, firstConnected_(false)
 		{
 		}
 
@@ -43,12 +43,11 @@ private:
 			eprosima::fastdds::dds::DataWriter* writer,
 			const eprosima::fastdds::dds::PublicationMatchedStatus& info) override {
 			if (info.current_count_change == 1) {
-				matched_ = info.total_count;
-				firstConnected_ = true;
+				matched_ = info.current_count;
 				std::cout << "Publisher matched." << std::endl;
 			}
 			else if (info.current_count_change == -1) {
-				matched_ = info.total_count;
+				matched_ = info.current_count;
 				std::cout << "Publisher unmatched." << std::endl;
 			}
 			else {
@@ -56,9 +55,7 @@ private:
 					<< " is not a valid value for PublicationMatchedStatus current count change" << std::endl;
 			}
 		}
-		int matched_;
-
-		bool firstConnected_;
+		std::atomic_int matched_;
 	}
 	listener_;
 
@@ -87,8 +84,7 @@ public:
 		eprosima::fastdds::dds::DomainParticipantFactory::get_instance()->delete_participant(participant_);
 	}
 
-	const char* getTopic() { return topicName_; };
-	const char* getMessageType() {return messageName_; };
+	int getNumSubscribers() { return listener_.matched_; };
 
 	bool init() {
 		if (initialized_) {

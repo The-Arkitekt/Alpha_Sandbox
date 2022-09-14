@@ -1,5 +1,4 @@
 struct TextMessage
 {
-    unsigned long index;
     string message;
 };

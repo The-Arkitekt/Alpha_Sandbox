@@ -3,14 +3,13 @@
 #include "TextMessageNode.h"
 
 TextMessageNode::TextMessageNode() 
-	: textMessagePublisher_(nullptr)
+	: Worker()
+	, textMessagePublisher_(nullptr)
 	, textMessageSubscriber_(nullptr)
 {}
 
 TextMessageNode::~TextMessageNode() {
-	if (initialized_) {
-		delete(textMessagePublisher_);
-	}
+	cleanup();
 }
 
 bool TextMessageNode::init() {
@@ -27,39 +26,36 @@ bool TextMessageNode::init() {
 	return true;
 }
 
-bool TextMessageNode::standby() {
-	if (!initialized_) {
-		return false;
-	}
-	return true;
-}
-
 bool TextMessageNode::run() {
 	if (!initialized_) {
 		return false;
 	}
 
 	TextMessage tm_;
-	tm_.index(0);
 	tm_.message("Hello");
 
-	uint32_t samples = 10;
+	uint32_t samples = 5;
 	uint32_t sent = 0;
 
 	while (sent < samples) {
 		if (textMessagePublisher_->publish(tm_)) {
 			sent++;
-			std::cout << "Message: " << tm_.message() << " with index: " << tm_.index()
-				<< " SENT" << std::endl;
-			tm_.index(tm_.index() + 1);
+			std::cout << "Message: " << tm_.message() << " SENT" << std::endl;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		while (textMessageSubscriber_->getNumMessages() > 0) {
 			TextMessage received = textMessageSubscriber_->popOldestMessage();
-			std::cout << "Message: " << received.message() << ", with index: " << received.index()
-				<< " RECEIVED" << std::endl;
+			std::cout << "Message: " << received.message() << " RECEIVED" << std::endl;
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	}
 	return true;
+}
+
+void TextMessageNode::cleanup() {
+	if (initialized_) {
+		delete(textMessagePublisher_);
+		delete(textMessageSubscriber_);
+	}
+	initialized_ = false;
 }

@@ -1,18 +1,22 @@
-#include "../../base/Node.h"
-#include "../../base/Publisher.h"
-#include "../../base/Subscriber.h"
+#ifndef TEXTMESSAGENODE_H
+#define TEXTMESSAGENODE_H
+
+#include "../../base/Worker.h"
 
 #include "../../../messages/TextMessage/TextMessagePubSubTypes.h"
 
-class TextMessageNode : public Node {
+class TextMessageNode : public Worker {
 public:
 	TextMessageNode();
 	~TextMessageNode();
-	bool init();
-	bool standby();
-	bool run();
 
 private:
+	bool init();
+	bool run();
+	void cleanup();
+
 	Publisher<TextMessage, TextMessagePubSubType>* textMessagePublisher_;
 	Subscriber<TextMessage, TextMessagePubSubType>* textMessageSubscriber_;
 };
+
+#endif // TEXTMESSAGENODE_H

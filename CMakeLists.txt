@@ -30,13 +30,36 @@ endif()
 # include the HelloWorld Topic files
 message(STATUS "Configuring publisher/subscriber example...")
 file(GLOB Message_SOURCES_CXX "messages/*/*.cxx")
-set(SOURCE_EXE src/main.cpp 
-               src/nodes/TextMessageNode/TextMessageNode.cpp
-               src/base/Node.cpp)
+set(main_SOURCE_EXE 
+               src/main.cpp 
+               src/base/Worker.cpp
+               src/nodes/ModeController/ModeController.cpp
+               src/nodes/TextMessageNode/TextMessageNode.cpp)
+
+set(mode_controller_SOURCE_EXE 
+               src/ModeControllerMain.cpp 
+               src/base/Worker.cpp
+               src/nodes/ModeController/ModeController.cpp
+               src/nodes/TextMessageNode/TextMessageNode.cpp)
+
+set(text_message_SOURCE_EXE 
+               src/TextMessageMain.cpp 
+               src/base/Worker.cpp
+               src/nodes/ModeController/ModeController.cpp
+               src/nodes/TextMessageNode/TextMessageNode.cpp)
+
 
 # add all source files needed to build the publisher executable, and links the executable and the library together
-add_executable(main ${SOURCE_EXE} ${Message_SOURCES_CXX})
+add_executable(main ${main_SOURCE_EXE} ${Message_SOURCES_CXX})
 target_link_libraries(main fastrtps fastcdr)
+
+add_executable(ModeControllerMain ${mode_controller_SOURCE_EXE} ${Message_SOURCES_CXX})
+target_link_libraries(ModeControllerMain fastrtps fastcdr)
+
+add_executable(TextMessageMain ${text_message_SOURCE_EXE} ${Message_SOURCES_CXX})
+target_link_libraries(TextMessageMain fastrtps fastcdr)
+
+
 
 
 # add all sources and links for subscriber executable, same as above
