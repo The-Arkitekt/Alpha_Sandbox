@@ -10,18 +10,16 @@
 
 class Worker : public Node {
 public:
+	Worker();
 	void runThread();
 
 protected:
-	Worker();
-	~Worker();
-
-	Subscriber<Byte, BytePubSubType>* modeCommandSubscriber_;
-	Publisher<Byte, BytePubSubType>* statusPublisher_;
+	Subscriber<Byte, BytePubSubType>  modeCommandSubscriber_;
+	Publisher<Byte, BytePubSubType> statusPublisher_;
 
 private:
-	void moveToStandby();
 	bool standby();
+	bool initWorker();
 };
 
 #endif // WORKER_H

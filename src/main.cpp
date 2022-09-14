@@ -1,20 +1,21 @@
 #include <iostream>
 #include <thread>
-#include <future>
 
 #include "nodes/ModeController/ModeController.h"
 #include "nodes/TextMessageNode/TextMessageNode.h"
 
 int main(int argc, char** argv) {
 
-	ModeController mc;
-	TextMessageNode tmn_1;
+	ModeController* mc = new ModeController();
+	TextMessageNode* tmn_1 = new TextMessageNode();
 
-	std::thread mt(&ModeController::runThread, mc);
-	std::thread tmt_1(&TextMessageNode::runThread, tmn_1);
+	auto mt = std::thread([&] { mc->runThread(); });
+	auto tmt_1 = std::thread([&] {tmn_1->runThread(); });
 
-	mt.join();
 	tmt_1.join();
+	delete(tmn_1);
+	mt.join();
+	delete(mc);
 
 	return 0;
 
