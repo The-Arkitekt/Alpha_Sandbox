@@ -1,58 +1,58 @@
 #include "ModeController.h"
+#include "../../common/xmlParser/tinyxml2/tinyxml2.h"
 #include <iostream>
 #include <atomic>
 
 ModeController::ModeController()
-	: numNodes_(1)
+	: Node("../../../config/ModeController.xml")
 	, modeCommandPublisher_("ModeCommand", "Byte", new BytePubSubType())
-	, statusSubscriber_("Status", "Byte", new BytePubSubType())
-{}
-
-void ModeController::runThread() {
-	if (!init())
-		return;
-
-	run();
+	, statusSubscriber_("WorkerStatus", "Status", new StatusPubSubType())
+{
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile("../../../config/ModeController.xml");
+	tinyxml2::XMLElement* root = doc.RootElement();
+	tinyxml2::XMLElement* worker = root->FirstChildElement("Worker");
+	while (worker != nullptr) {
+		tinyxml2::XMLElement* name = worker->FirstChildElement("Name");
+		workerStatuses_[name->GetText()] = DataTypes::StatusTypes::UNKNOWN;
+		// get next node
+		worker = worker->NextSiblingElement();
+	}
 }
 
-
-bool ModeController::init() {
+void ModeController::init() {
 	modeCommandPublisher_.init();
 	statusSubscriber_.init();
-
-	return true;
 }
 
 bool ModeController::run() {
 	Byte modeCommand;
-	std::atomic_int numWorkersInitialized{ 0 };
-	std::atomic_bool workersStarted{ false };
-	while (true) {
-		if (!workersStarted && modeCommandPublisher_.getNumSubscribers() == numNodes_) {
+	
+	// get oldest status message
+	if (statusSubscriber_.getNumMessages() > 0) {
+		Status status = statusSubscriber_.popOldestMessage();
+		// if status from unknown worker, shutdown
+		if (workerStatuses_.find(status.nodeName()) == workerStatuses_.end()) {
+			std::cout << "Received status from invalid worker: " << status.nodeName() << std::endl;
+			modeCommand.data() = DataTypes::ModeTypes::SHUTDOWN;
+			modeCommandPublisher_.publish(modeCommand);
+			return false;
+		}
+		workerStatuses_[status.nodeName()] = status.data();
+	}
+	// iterate over all workers
+	for (std::map<std::string, uint8_t>::iterator it = workerStatuses_.begin(); it != workerStatuses_.end(); ++it) {
+		// if not all workers are subscribed to mode control topic or any node reports DOWN, reset
+		if (it->second == DataTypes::StatusTypes::DOWN || it->second == DataTypes::StatusTypes::UNKNOWN) {
 			modeCommand.data() = DataTypes::ModeTypes::STANDBY;
 			modeCommandPublisher_.publish(modeCommand);
-
-			// check for initialized status messages
-			while (statusSubscriber_.getNumMessages() > 0) {
-				Byte received = statusSubscriber_.popOldestMessage();
-				if (received.data() == DataTypes::StatusTypes::INITIALIZED) {
-					numWorkersInitialized++;
-				}
-			}
-			if (numWorkersInitialized == numNodes_) {
-				modeCommand.data() = DataTypes::ModeTypes::RUN;
-				modeCommandPublisher_.publish(modeCommand);
-				workersStarted = true;
-			}
+			return true;
 		}
-		else if (workersStarted) {
-			numWorkersInitialized = modeCommandPublisher_.getNumSubscribers();
-			if (numWorkersInitialized < numNodes_) {
-				modeCommand.data() = DataTypes::ModeTypes::SHUTDOWN;
-				modeCommandPublisher_.publish(modeCommand);
-				return true;
-			}
-		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
+
+	// RUN if all workers are initialized and UP
+	modeCommand.data() = DataTypes::ModeTypes::RUN;
+	modeCommandPublisher_.publish(modeCommand);
+
+	return true; 
 }

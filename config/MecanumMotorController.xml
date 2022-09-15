@@ -1,0 +1,5 @@
+<MecanumMotorController>
+	<Name>MecanumMotorController</Name>
+	<LoopDelay>100</LoopDelay>
+	
+</MecanumMotorController>

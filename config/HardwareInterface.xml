@@ -1,0 +1,8 @@
+<HardwareInterface>
+	<Device>/dev/tty3</Device>
+	<Parity>0</Parity>
+	<StopBit>0</StopBit>
+	<HWFlowControl>0</HWFlowControl>
+	<Baud>38400</Baud>
+	
+</HardwareInterface>

@@ -1,0 +1,14 @@
+<ModeController>
+	<LoopDelay>100</LoopDelay>
+
+	<Worker>
+		<Name>MovementGenerator</Name>
+		<Criticality>Critical</Criticality>
+	</Worker>
+
+	<Worker>
+		<Name>MecanumMotorController</Name>
+		<Criticality>Critical</Criticality>
+	</Worker>
+	
+</ModeController>

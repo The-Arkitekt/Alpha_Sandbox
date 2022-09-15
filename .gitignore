@@ -1,5 +1,5 @@
-build/*
-build/
+builds/*/build/*
+builds/*/build/
 
 messages/*/*.cxx
 messages/*/*.h

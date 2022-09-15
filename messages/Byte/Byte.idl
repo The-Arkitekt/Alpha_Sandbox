@@ -1,4 +1,4 @@
 struct Byte
 {
-    unsigned short data;
+    octet data;
 };

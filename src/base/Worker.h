@@ -5,21 +5,24 @@
 #include "Publisher.h"
 #include "Subscriber.h"
 #include "../../messages/Byte/BytePubSubTypes.h"
+#include "../../messages/Status/StatusPubSubTypes.h"
 #include "../common/DataTypes.h"
 
 
 class Worker : public Node {
 public:
-	Worker();
+	Worker(const char*);
 	void runThread();
 
 protected:
 	Subscriber<Byte, BytePubSubType>  modeCommandSubscriber_;
-	Publisher<Byte, BytePubSubType> statusPublisher_;
+	Publisher<Status, StatusPubSubType> statusPublisher_;
 
 private:
-	bool standby();
-	bool initWorker();
+	void initWorker();
+
+	bool readyToRun;
+	const char* nodeName;
 };
 
 #endif // WORKER_H

@@ -1,0 +1,7 @@
+struct MoveVector
+{
+    // data[0] --> x
+    // data[1] --> y
+    // data[2] --> rotation
+    short data[3];
+};

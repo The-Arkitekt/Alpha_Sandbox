@@ -1,63 +1,69 @@
 #include "Worker.h"
+#include "../common/xmlParser/tinyxml2/tinyxml2.h"
 #include <iostream>
 #include <algorithm>
 
-Worker::Worker()
-	: modeCommandSubscriber_("ModeCommand", "Byte", new BytePubSubType())
-	, statusPublisher_("Status", "Byte", new BytePubSubType())
-{}
+Worker::Worker(const char* config)
+	: Node(config)
+	, modeCommandSubscriber_("ModeCommand", "Byte", new BytePubSubType())
+	, statusPublisher_("WorkerStatus", "Status", new StatusPubSubType())
+	, readyToRun(false)
+{
+	tinyxml2::XMLDocument doc;
+	doc.LoadFile(config);
+	tinyxml2::XMLElement* root = doc.RootElement();
+	tinyxml2::XMLElement* name = root->FirstChildElement("Name");
+	nodeName = name->GetText();
+}
 	
 
-bool Worker::initWorker() {
+void Worker::initWorker() {
 	modeCommandSubscriber_.init();
 	statusPublisher_.init();
-	return true;
-}
-
-bool Worker::standby() {
-
-	while (true) {
-		while (modeCommandSubscriber_.getNumMessages() > 0) {
-			Byte received = modeCommandSubscriber_.popOldestMessage();
-			if (received.data() == DataTypes::ModeTypes::RUN)
-				return true;
-
-			else if (received.data() == DataTypes::ModeTypes::SHUTDOWN)
-				return false;
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-		}
-	}
 }
 
 void Worker::runThread() {
-	if (!initWorker())
-		return;
+	initWorker();
+	init();
 
-	if (!init())
-		return;
+	Byte modeCommand;
+	Status status;
 
-	bool modeControllerReady = false;
-	while (!modeControllerReady) {
-		while (modeCommandSubscriber_.getNumMessages() > 0) {
-			Byte received = modeCommandSubscriber_.popOldestMessage();
-			if (received.data() == DataTypes::ModeTypes::STANDBY) {
-				modeControllerReady = true;
-				Byte status;
-				status.data() = DataTypes::StatusTypes::INITIALIZED;
-				statusPublisher_.publish(status);
+	status.nodeName() = nodeName;
+
+	bool standingBy = false;
+	while (true) {
+		// check for messages
+		if (modeCommandSubscriber_.getNumMessages() > 0) {
+			modeCommand = modeCommandSubscriber_.popOldestMessage();
+			// standby
+			if (modeCommand.data() == DataTypes::ModeTypes::STANDBY) {
+				if (!standingBy) {
+					status.data() = DataTypes::StatusTypes::READY;
+					statusPublisher_.publish(status);
+					standingBy = true;
+				}
 			}
+			// run
+			else if (modeCommand.data() == DataTypes::ModeTypes::RUN) {
+				standingBy = false;
+				if (run())
+					status.data() = DataTypes::StatusTypes::READY;
+				else
+					status.data() = DataTypes::StatusTypes::DOWN;
+			}
+			// shutdown
+			else if (modeCommand.data() == DataTypes::ModeTypes::SHUTDOWN)
+				status.data() = DataTypes::StatusTypes::DOWN;
+
+			// publish status
+			if (!standingBy)
+				statusPublisher_.publish(status);
+
+			// if status is DOWN, return
+			if (status.data() == DataTypes::StatusTypes::DOWN)
+				return ;
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
-	}
-
-	if (!standby()) {
-		Byte statusMsg;
-		statusMsg.data(DataTypes::StatusTypes::DOWN);
-		statusPublisher_.publish(statusMsg);
-		return;
-	}
-
-	if (!run())
-		return;
+		std::this_thread::sleep_for(std::chrono::milliseconds(loopDelay));
+	}	
 }

@@ -1,0 +1,5 @@
+struct Status
+{
+    string nodeName;
+    octet data;
+};
