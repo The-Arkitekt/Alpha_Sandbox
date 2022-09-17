@@ -3,7 +3,6 @@
 
 MecanumMotorController::MecanumMotorController()
 	: Worker("../../../config/MecanumMotorController.xml")
-	, motorSpeeds_({0,0,0,0})
 	, serial("STM32")
 	, vectorMoveSubscriber_("VectorMove", "MoveVector", new MoveVectorPubSubType())
 {}
@@ -26,34 +25,34 @@ bool MecanumMotorController::run() {
 	return true;
 }
 
-void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {	
+void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	/*
 	*						  ______
 	*	motorSpeeds[0] --> []|		|[] <-- motorSpeeds[1]
 	*						 |		|
 	*						 |		|
 	*	motorSpeeds[2] --> []|______|[] <-- motorSpeeds[3]
-	* 
+	*
 	*					^
 	*					|
 	*		msg[1] -->  |____>	<-- msg[1]
 	*		msg[2] --> rotation
-	* 
+	*
 	*
 	*	- brake <-- motor speed value set to 0
 	*/
 	// create transfer function matrix IGNORING ROTATION FOR NOW
-	std::array <std::array<uint8_t, 4>, 3> transferMatrix{{
-														{1, uint8_t(-1), 1, uint8_t(-1)},
+	std::array <std::array<int8_t, 4>, 3> transferMatrix{ {
+														{1, -1, 1, -1},
 														{1,  1, 1,  1},
 														{0,  0, 0,  0}
-												  }};
-		
+												  } };
+
 	// create motor speeds array
-	motorSpeeds_.data[0] = 0;
-	motorSpeeds_.data[1] = 0;
-	motorSpeeds_.data[2] = 0;
-	motorSpeeds_.data[3] = 0;
+	motorSpeeds_[0] = 0;
+	motorSpeeds_[1] = 0;
+	motorSpeeds_[2] = 0;
+	motorSpeeds_[3] = 0;
 
 	// do matrix multiplication
 	uint8_t i, j = 0;
@@ -61,22 +60,28 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 3; j++) {
 			// check for overflow (the highest SIGNED value) 
-			tmp = int8_t(motorSpeeds_.data[i]) + (int8_t(msg.data()[j]) * int8_t(transferMatrix[j][i]));
+			tmp = motorSpeeds_[i] + (msg.data()[j] * transferMatrix[j][i]);
 			if (tmp > std::numeric_limits<int8_t>::max())
-				motorSpeeds_.data[i] = std::numeric_limits<int8_t>::max();
+				motorSpeeds_[i] = std::numeric_limits<int8_t>::max();
 			else if (tmp < std::numeric_limits<int8_t>::min())
-				motorSpeeds_.data[i] = std::numeric_limits<int8_t>::min();
+				motorSpeeds_[i] = std::numeric_limits<int8_t>::min();
 			else
-				motorSpeeds_.data[i] += msg.data()[j] * transferMatrix[j][i];
+				motorSpeeds_[i] += msg.data()[j] * transferMatrix[j][i];
 		}
+
 	}
 }
 
 bool MecanumMotorController::applyMotorSpeeds() {
-	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_.data[0]) << "],[" << int(motorSpeeds_.data[1]) << "],[" << int(motorSpeeds_.data[2]) << "],[" << int(motorSpeeds_.data[3]) << "]" << std::endl;
+	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
 	
 	// do hardware interface stuff here
-	serial.writeData((motorSpeeds_.data));
+	uint8_t data[4]{ uint8_t(motorSpeeds_[0]),
+					 uint8_t(motorSpeeds_[1]),
+					 uint8_t(motorSpeeds_[2]),
+					 uint8_t(motorSpeeds_[3])
+	};
+	serial.writeData(data);
 
 
 	return true;

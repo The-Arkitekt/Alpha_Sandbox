@@ -15,8 +15,8 @@ class SerialInterface {
 public:
 	SerialInterface(const char*);
 
-	bool writeData(char*);
-	bool readData(char*);
+	bool writeData(uint8_t*);
+	bool readData(uint8_t*);
 		
 private:
 	struct SerialSettings {
@@ -26,8 +26,8 @@ private:
 		bool hwFlow;
 		int baud;
 	} settings_;
-	int getBaud(int baud);
 
+	int getBaud(int baud);
 };
 
 #endif // SERIALINTERFACE

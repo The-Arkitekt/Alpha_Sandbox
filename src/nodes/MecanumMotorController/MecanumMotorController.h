@@ -17,9 +17,7 @@ private:
 	void generateMotorSpeeds(MoveVector&);
 	bool applyMotorSpeeds();
 
-	struct speedArray {
-		char data[4];
-	}motorSpeeds_;
+	int8_t motorSpeeds_[4]{0,0,0,0};
 
 	SerialInterface serial;
 
