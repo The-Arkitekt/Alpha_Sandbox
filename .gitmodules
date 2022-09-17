@@ -1,3 +1,3 @@
-[submodule "src/commonxmlParser/tinyxml2"]
-	path = src/commonxmlParser/tinyxml2
+[submodule "src/common/xmlParser/tinyxml2"]
+	path = src/common/xmlParser/tinyxml2
 	url = https://github.com/leethomason/tinyxml2.git

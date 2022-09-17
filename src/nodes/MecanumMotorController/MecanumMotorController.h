@@ -5,6 +5,7 @@
 
 #include "../../base/Worker.h"
 #include "../../../messages/MoveVector/MoveVectorPubSubTypes.h"
+#include "../../common/HardwareInterface/SerialInterface.h"
 
 class MecanumMotorController : public Worker {
 public:
@@ -13,11 +14,15 @@ public:
 private:
 	void init();
 	bool run();
-	std::array<int16_t, 4> generateMotorSpeeds(MoveVector&);
-	bool applyMotorSpeeds(std::array<int16_t, 4>);
+	void generateMotorSpeeds(MoveVector&);
+	bool applyMotorSpeeds();
 
+	struct speedArray {
+		char data[4];
+	}motorSpeeds_;
 
-	std::array<int16_t, 4> motorSpeeds;
+	SerialInterface serial;
+
 	Subscriber<MoveVector, MoveVectorPubSubType>vectorMoveSubscriber_;
 };
 

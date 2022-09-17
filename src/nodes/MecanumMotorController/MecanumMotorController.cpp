@@ -1,9 +1,10 @@
 #include "MecanumMotorController.h"
-#include "../../common/HardwareInterface/HardwareInterface.h"
+#include <typeinfo>
 
 MecanumMotorController::MecanumMotorController()
 	: Worker("../../../config/MecanumMotorController.xml")
-	, motorSpeeds({0,0,0,0})
+	, motorSpeeds_({0,0,0,0})
+	, serial("STM32")
 	, vectorMoveSubscriber_("VectorMove", "MoveVector", new MoveVectorPubSubType())
 {}
 void MecanumMotorController::init() {
@@ -14,17 +15,18 @@ bool MecanumMotorController::run() {
 	// get move vector message
 	if (vectorMoveSubscriber_.getNumMessages() > 0) {
 		MoveVector moveVector = vectorMoveSubscriber_.popOldestMessage();
-		std::cout << moveVector.data()[0] << moveVector.data()[1] << moveVector.data()[2] << std::endl;
+		
 		// generate motor speeds
-		std::array<int16_t, 4> motorSpeeds = generateMotorSpeeds(moveVector);
+		generateMotorSpeeds(moveVector);
 
 		// apply motor speeds
-		applyMotorSpeeds(motorSpeeds);
+		if (!applyMotorSpeeds())
+			return false;
 	}
 	return true;
 }
 
-std::array<int16_t, 4> MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {	
+void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {	
 	/*
 	*						  ______
 	*	motorSpeeds[0] --> []|		|[] <-- motorSpeeds[1]
@@ -41,29 +43,37 @@ std::array<int16_t, 4> MecanumMotorController::generateMotorSpeeds(MoveVector& m
 	*	- brake <-- motor speed value set to 0
 	*/
 	// create transfer function matrix IGNORING ROTATION FOR NOW
-	std::array<std::array<int16_t, 4>, 3> transferMatrix{{
+	std::array <std::array<const char, 4>, 3> transferMatrix{{
 														{1 ,-1, 1, -1},
 														{1,  1, 1,  1},
 														{0,  0, 0,  0}
-														}};
+												  }};
 
 	// create motor speeds array
-	std::array<int16_t, 4> motorSpeeds{ 0,0,0,0 };
+	motorSpeeds_.data[0] = 0;
+	motorSpeeds_.data[1] = 0;
+	motorSpeeds_.data[2] = 0;
+	motorSpeeds_.data[3] = 0;
 
 	// do matrix multiplication
 	uint8_t i, j = 0;
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 3; j++) {
-			motorSpeeds[i] += msg.data()[j] * transferMatrix[j][i];
+			// check for overflow
+			if ((motorSpeeds_.data[i] + msg.data()[j] * transferMatrix[j][i]) > std::numeric_limits<signed char>::max())
+				motorSpeeds_.data[i] = std::numeric_limits<signed char>::max();
+			else
+				motorSpeeds_.data[i] += msg.data()[j] * transferMatrix[j][i];
 		}
 	}
-	return motorSpeeds;
 }
 
-bool MecanumMotorController::applyMotorSpeeds(std::array<int16_t, 4> motorSpeeds) {
-	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds[0]) << "],[" << int(motorSpeeds[1]) << "],[" <<int( motorSpeeds[2]) << "],[" << int(motorSpeeds[3]) << "]" << std::endl;
+bool MecanumMotorController::applyMotorSpeeds() {
+	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_.data[0]) << "],[" << int(motorSpeeds_.data[1]) << "],[" <<int( motorSpeeds_.data[2]) << "],[" << int(motorSpeeds_.data[3]) << "]" << std::endl;
 	
 	// do hardware interface stuff here
+	serial.writeData(motorSpeeds_.data);
+
 
 	return true;
 }

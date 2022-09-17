@@ -16,7 +16,6 @@ bool MovementGenerator::run() {
 	// get move command messages
 	if (moveCommandSubscriber_.getNumMessages() > 0) {
 		TextMessage msg = moveCommandSubscriber_.popOldestMessage();
-		std::cout << "got a message";
 
 		// generate move vector
 		MoveVector moveVector = generateVector(msg);

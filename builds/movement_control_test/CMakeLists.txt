@@ -41,6 +41,7 @@ set(movement_control_SOURCE_EXE
                ../../src/base/Worker.cpp
                ../../src/base/Node.cpp
                ../../src/common/xmlParser/tinyxml2/tinyxml2.cpp
+               ../../src/common/HardwareInterface/SerialInterface.cpp
                ../../src/nodes/ModeController/ModeController.cpp
                ../../src/nodes/MovementGenerator/MovementGenerator.cpp
                ../../src/nodes/MecanumMotorController/MecanumMotorController.cpp)

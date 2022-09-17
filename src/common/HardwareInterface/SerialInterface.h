@@ -1,5 +1,5 @@
-#ifndef HARDWAREINTERFACE_H
-#define HARDWAREINTERFACE_H
+#ifndef SERIALINTERFACE_H
+#define SERIALINTERFACE_H
 
 #include <iostream>
 #include <string>
@@ -10,23 +10,24 @@
 #include <termios.h>
 #include <unistd.h>
 
-class HardwareInterface {
+class SerialInterface {
 
 public:
-	HardwareInterface(const char*);
+	SerialInterface(const char*);
 
-	bool writeData(const char*, uint8_t);
+	bool writeData(const char*);
 	const char* readData();
 		
 private:
-	const char* device_;
-	struct ttySettings {
+	struct SerialSettings {
+		const char* device;
 		bool parity;
 		bool stopBit;
-		bool HwFlow;
+		bool hwFlow;
 		int baud;
 	} settings_;
+	int getBaud(int baud);
 
 };
 
-#endif // HARDWAREINTERFACE_H
+#endif // SERIALINTERFACE
