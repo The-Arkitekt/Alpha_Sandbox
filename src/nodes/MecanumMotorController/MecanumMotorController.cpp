@@ -44,7 +44,7 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	*/
 	// create transfer function matrix IGNORING ROTATION FOR NOW
 	std::array <std::array<char, 4>, 3> transferMatrix{{
-														{1, static_cast<char>(-1), 1, static_cast<char>(-1)},
+														{1, -1, 1, -1},
 														{1,  1, 1,  1},
 														{0,  0, 0,  0}
 												  }};
@@ -69,10 +69,10 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 }
 
 bool MecanumMotorController::applyMotorSpeeds() {
-	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_.data[0]) << "],[" << int(motorSpeeds_.data[1]) << "],[" <<int( motorSpeeds_.data[2]) << "],[" << int(motorSpeeds_.data[3]) << "]" << std::endl;
+	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_.data[0]) << "],[" << int(motorSpeeds_.data[1]) << "],[" << int(motorSpeeds_.data[2]) << "],[" << int(motorSpeeds_.data[3]) << "]" << std::endl;
 	
 	// do hardware interface stuff here
-	serial.writeData(motorSpeeds_.data);
+	serial.writeData((motorSpeeds_.data));
 
 
 	return true;
