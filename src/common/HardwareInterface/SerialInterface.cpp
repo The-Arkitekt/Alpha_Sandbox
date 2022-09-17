@@ -24,7 +24,7 @@ SerialInterface::SerialInterface(const char* config) {
 	baudConfig->QueryIntText(&settings_.baud);
 }
 
-bool SerialInterface::writeData(const char* data) {
+bool SerialInterface::writeData(char* data) {
 
 	// open serial port
 	int serial_port = open(settings_.device, O_RDWR);
@@ -99,8 +99,8 @@ bool SerialInterface::writeData(const char* data) {
 	return true;
 }
 
-const char* SerialInterface::readData() {
-	return "data";
+bool SerialInterface::readData(char* buf) {
+	return true;
 }	
 
 int getBaud(int baud) {

@@ -15,8 +15,8 @@ class SerialInterface {
 public:
 	SerialInterface(const char*);
 
-	bool writeData(const char*);
-	const char* readData();
+	bool writeData(char*);
+	bool readData(char*);
 		
 private:
 	struct SerialSettings {

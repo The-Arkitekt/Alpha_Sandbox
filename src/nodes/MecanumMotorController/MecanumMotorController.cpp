@@ -43,12 +43,12 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	*	- brake <-- motor speed value set to 0
 	*/
 	// create transfer function matrix IGNORING ROTATION FOR NOW
-	std::array <std::array<const char, 4>, 3> transferMatrix{{
-														{1 ,-1, 1, -1},
+	std::array <std::array<char, 4>, 3> transferMatrix{{
+														{1, static_cast<char>(-1), 1, static_cast<char>(-1)},
 														{1,  1, 1,  1},
 														{0,  0, 0,  0}
 												  }};
-
+		
 	// create motor speeds array
 	motorSpeeds_.data[0] = 0;
 	motorSpeeds_.data[1] = 0;
@@ -59,7 +59,7 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	uint8_t i, j = 0;
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 3; j++) {
-			// check for overflow
+			// check for overflow (the highest SIGNED value) 
 			if ((motorSpeeds_.data[i] + msg.data()[j] * transferMatrix[j][i]) > std::numeric_limits<signed char>::max())
 				motorSpeeds_.data[i] = std::numeric_limits<signed char>::max();
 			else
