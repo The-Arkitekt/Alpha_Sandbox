@@ -44,7 +44,7 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	*/
 	// create transfer function matrix IGNORING ROTATION FOR NOW
 	std::array <std::array<char, 4>, 3> transferMatrix{{
-														{1, -1, 1, -1},
+														{1, char(-1), 1, char(-1)},
 														{1,  1, 1,  1},
 														{0,  0, 0,  0}
 												  }};
