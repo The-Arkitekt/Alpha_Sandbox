@@ -68,7 +68,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	// Write to serial port
 	unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	write(serial_port, 'w', sizeof(char));
+	write(serial_port, msg, sizeof(msg));
 
 
 	// Allocate memory for read buffer, set size according to your needs
