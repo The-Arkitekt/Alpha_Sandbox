@@ -116,6 +116,15 @@ public:
 
         eprosima::fastdds::dds::DomainParticipantQos pqos = eprosima::fastdds::dds::PARTICIPANT_QOS_DEFAULT;
         pqos.name("Participant_sub");
+
+        /*
+        // set up remote peers
+        eprosima::fastrtps::rtps::Locator_t initial_peer;
+        eprosima::fastrtps::rtps::IPLocator::setIPv4(initial_peer, "0.0.0.0");
+        initial_peer.port = pqos.wire_protocol().port.getMulticastPort(0);
+        pqos.wire_protocol().builtin.initialPeersList.push_back(initial_peer);
+        */
+
         auto factory = eprosima::fastdds::dds::DomainParticipantFactory::get_instance();
 
         participant_ = factory->create_participant(0, pqos);
