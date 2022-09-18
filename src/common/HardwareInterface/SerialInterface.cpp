@@ -39,8 +39,8 @@ bool SerialInterface::writeData(uint8_t* data) {
 	}
 
 	// configure tty using configuration given
-	tty.c_cflag &= (PARENB * settings_.parity);										// Clear parity bit, disabling parity (most common)
-	tty.c_cflag &= (CSTOPB * settings_.stopBit);									// Clear stop field, only one stop bit used in communication (most common)
+	tty.c_cflag &= ~PARENB;															// set parity
+	tty.c_cflag |= CSTOPB;															// set stop bit
 	tty.c_cflag &= ~CSIZE;															// Clear all bits that set the data size 
 	tty.c_cflag |= CS8;																// 8 bits per byte (most common)
 	tty.c_cflag &= (CRTSCTS * settings_.hwFlow);									// Disable RTS/CTS hardware flow control (most common)
@@ -68,7 +68,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	// Write to serial port
 	unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	write(serial_port, msg, sizeof(msg));
+	write(serial_port, 'w', sizeof(char));
 
 
 	// Allocate memory for read buffer, set size according to your needs
