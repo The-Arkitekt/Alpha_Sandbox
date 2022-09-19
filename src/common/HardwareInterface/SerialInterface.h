@@ -15,11 +15,13 @@ class SerialInterface {
 public:
 	SerialInterface(const char*);
 
+	void config();
 	bool writeData(uint8_t*);
 	bool readData(uint8_t*);
 		
 private:
 	const char* configName_;
+
 	struct SerialSettings {
 		const char* device;
 		bool parity;
