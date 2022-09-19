@@ -85,7 +85,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 
 	// Allocate memory for read buffer, set size according to your needs
-	char read_buf[1]{0};
+	char read_buf[2]{'\0','\0'};
 
 	// Normally you wouldn't do this memset() call, but since we will just receive
 	// ASCII data for this example, we'll set everything to 0 so we can
