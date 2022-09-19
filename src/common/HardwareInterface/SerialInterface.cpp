@@ -31,6 +31,7 @@ void SerialInterface::config() {
 bool SerialInterface::writeData(uint8_t* data) {
 
 	// open serial port
+	std::cout << "Device: " << settings_.device << std::endl;
 	int serial_port = open(settings_.device, O_RDWR);
 
 	// create new termios struct
