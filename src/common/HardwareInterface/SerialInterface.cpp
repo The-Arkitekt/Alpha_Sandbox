@@ -97,12 +97,9 @@ bool SerialInterface::writeData(uint8_t* data) {
 	// settings above, specifically VMIN and VTIME
 	//
 	int i = 0;
-	char read_str[10];
-	memset(&read_str, '\0', sizeof(read_str));
 	int num_bytes = 0;
 	for(i = 0; i < 4; i++) {
 		num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
-		strcat(read_str, read_buf);
 
 		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
 		if (num_bytes < 0) {
@@ -110,12 +107,12 @@ bool SerialInterface::writeData(uint8_t* data) {
 			return false;
 		}
 
-		std::cout << "Found a byte: " << read_str << std::endl;
+		std::cout << "Found a byte: " << read_buf << std::endl;
 	}
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
 	// print it to the screen like this!)
-	printf("Read %i bytes. Received message: %s", num_bytes, read_str);
+	printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
 
 	close(serial_port);
 
