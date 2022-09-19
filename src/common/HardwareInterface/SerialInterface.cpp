@@ -97,7 +97,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 	// settings above, specifically VMIN and VTIME
 	// This will loop until all of msg is read
 	int num_bytes = 0;
-	char str[250]
+	char str[250];
 	memset(&str '\0', sizeof(str));
 	while (num_bytes < 6) {
 		num_bytes += read(serial_port, &read_buf, sizeof(read_buf));
