@@ -8,11 +8,16 @@ MoveCommandHelper::MoveCommandHelper()
 	, moveCommandPublisher_("MoveCommand", "TextMessage", new TextMessagePubSubType())
 {}
 
-void MoveCommandHelper::init() {
+void MoveCommandHelper::configNode(tinyxml2::XMLElement* root) {
+	// Nothing else needed to config
+	return;
+}
+
+void MoveCommandHelper::initNode() {
 	moveCommandPublisher_.init();
 }
 
-bool MoveCommandHelper::run() {
+bool MoveCommandHelper::runNode() {
 	// get user input
 	int input;
 	TextMessage msg;

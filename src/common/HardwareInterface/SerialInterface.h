@@ -19,6 +19,7 @@ public:
 	bool readData(uint8_t*);
 		
 private:
+	const char* configName_;
 	struct SerialSettings {
 		const char* device;
 		bool parity;

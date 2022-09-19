@@ -12,8 +12,10 @@ public:
 	MecanumMotorController();
 
 private:
-	void init();
-	bool run();
+	void configWorker(tinyxml2::XMLElement*);
+	void initWorker();
+	bool runWorker();
+
 	void generateMotorSpeeds(MoveVector&);
 	bool applyMotorSpeeds();
 

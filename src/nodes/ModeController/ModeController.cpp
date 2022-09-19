@@ -7,10 +7,9 @@ ModeController::ModeController()
 	: Node("../../../config/ModeController.xml")
 	, modeCommandPublisher_("ModeCommand", "Byte", new BytePubSubType())
 	, statusSubscriber_("WorkerStatus", "Status", new StatusPubSubType())
-{
-	tinyxml2::XMLDocument doc;
-	doc.LoadFile("../../../config/ModeController.xml");
-	tinyxml2::XMLElement* root = doc.RootElement();
+{}
+
+void ModeController::configNode(tinyxml2::XMLElement* root) {
 	tinyxml2::XMLElement* worker = root->FirstChildElement("Worker");
 	while (worker != nullptr) {
 		tinyxml2::XMLElement* name = worker->FirstChildElement("Name");
@@ -20,12 +19,12 @@ ModeController::ModeController()
 	}
 }
 
-void ModeController::init() {
+void ModeController::initNode() {
 	modeCommandPublisher_.init();
 	statusSubscriber_.init();
 }
 
-bool ModeController::run() {
+bool ModeController::runNode() {
 	Byte modeCommand;
 	
 	// get oldest status message

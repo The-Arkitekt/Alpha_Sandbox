@@ -3,8 +3,11 @@
 
 #include "stdint.h"
 
+
 class DataTypes {
 public:
+
+	const static uint8_t MAX_NODE_NAME_SIZE = 25;
 
 	enum ModeTypes {STANDBY, RUN, SHUTDOWN};
 	static const char* modeTypesToString(uint8_t& mode) {

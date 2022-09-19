@@ -6,11 +6,16 @@ MecanumMotorController::MecanumMotorController()
 	, serial("STM32")
 	, vectorMoveSubscriber_("VectorMove", "MoveVector", new MoveVectorPubSubType())
 {}
-void MecanumMotorController::init() {
+
+void MecanumMotorController::configWorker(tinyxml2::XMLElement*) {
+	serial.config();
+}
+
+void MecanumMotorController::initWorker() {
 	vectorMoveSubscriber_.init();
 }
 
-bool MecanumMotorController::run() {
+bool MecanumMotorController::runWorker() {
 	// get move vector message
 	if (vectorMoveSubscriber_.getNumMessages() > 0) {
 		MoveVector moveVector = vectorMoveSubscriber_.popOldestMessage();
@@ -47,7 +52,6 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 														{1,  1, 1,  1},
 														{0,  0, 0,  0}
 												  } };
-
 	// create motor speeds array
 	motorSpeeds_[0] = 0;
 	motorSpeeds_[1] = 0;

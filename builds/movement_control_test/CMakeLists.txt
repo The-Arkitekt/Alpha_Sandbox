@@ -32,6 +32,7 @@ message(STATUS "Configuring publisher/subscriber example...")
 file(GLOB Message_SOURCES_CXX "../../messages/*/*.cxx")
 set(move_command_helper_SOURCE_EXE 
                ../../src/common/xmlParser/tinyxml2/tinyxml2.cpp
+               ../../src/base/Worker.cpp
                ../../src/base/Node.cpp
                ../../src/mains/MoveCommandHelperMain.cpp 
                ../../src/nodes/HelperNodes/MoveCommandHelper/MoveCommandHelper.cpp)

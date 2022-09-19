@@ -7,12 +7,17 @@ MovementGenerator::MovementGenerator()
 	, vectorMovePublisher_("VectorMove", "MoveVector", new MoveVectorPubSubType())
 {}
 
-void MovementGenerator::init() {
+void MovementGenerator::configWorker(tinyxml2::XMLElement* root) {
+	// add MovementGenerator specific configurations here
+	return;
+}
+
+void MovementGenerator::initWorker() {
 	moveCommandSubscriber_.init();
 	vectorMovePublisher_.init();
 }
 
-bool MovementGenerator::run() {
+bool MovementGenerator::runWorker() {
 	// get move command messages
 	if (moveCommandSubscriber_.getNumMessages() > 0) {
 		TextMessage msg = moveCommandSubscriber_.popOldestMessage();

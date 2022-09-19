@@ -1,20 +1,29 @@
 #include "Node.h"
-#include "../common/xmlParser/tinyxml2/tinyxml2.h"
 #include <thread>
 #include <iostream>
 
-Node::Node(const char* config) {
+Node::Node(const char* config)
+	: configFile_(config)
+{
+	std::cout << "Node created with config file: " << config << std::endl;
+}
+
+void Node::config() {
 	tinyxml2::XMLDocument doc;
-	doc.LoadFile(config);
+	doc.LoadFile(configFile_);
 	tinyxml2::XMLElement* root = doc.RootElement();
+
 	tinyxml2::XMLElement* delay = root->FirstChildElement("LoopDelay");
-	loopDelay = atoi(delay->GetText());
+	loopDelay_ = atoi(delay->GetText());
+	// do Node speific configure
+	configNode(root);
 }
 
 void Node::runThread() {
-	init();
+	config();
+	initNode();
 
-	while (run()) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(loopDelay));
+	while (runNode()) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(loopDelay_));
 	}
 }

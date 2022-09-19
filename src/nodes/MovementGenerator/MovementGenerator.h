@@ -12,8 +12,10 @@ public:
 	MovementGenerator();
 
 private:
-	void init();
-	bool run();
+	void configWorker(tinyxml2::XMLElement*);
+	void initWorker();
+	bool runWorker();
+
 	MoveVector generateVector(TextMessage&);
 
 	Subscriber<TextMessage, TextMessagePubSubType>moveCommandSubscriber_;

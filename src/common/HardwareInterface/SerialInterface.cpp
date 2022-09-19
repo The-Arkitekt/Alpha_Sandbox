@@ -1,16 +1,20 @@
 #include "SerialInterface.h"
 #include "../xmlParser/tinyxml2/tinyxml2.h"
 
-SerialInterface::SerialInterface(const char* config) {
+SerialInterface::SerialInterface(const char* configName) 
+	: configName_(configName)
+{}
+
+void SerialInterface::config() {
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile("../../../config/HardwareInterface.xml");
 	tinyxml2::XMLElement* root = doc.RootElement();
 	tinyxml2::XMLElement* serial = root->FirstChildElement("SerialInterface");
-	tinyxml2::XMLElement* configuration = serial->FirstChildElement(config);
+	tinyxml2::XMLElement* configuration = serial->FirstChildElement(configName_);
 
 	tinyxml2::XMLElement* deviceConfig = configuration->FirstChildElement("Device");
 	settings_.device = deviceConfig->GetText();
-	
+
 	tinyxml2::XMLElement* parityConfig = configuration->FirstChildElement("Parity");
 	parityConfig->QueryBoolText(&settings_.parity);
 

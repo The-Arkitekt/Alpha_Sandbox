@@ -11,8 +11,9 @@ public:
 	MoveCommandHelper();
 
 private:
-	void init();
-	bool run();
+	void configNode(tinyxml2::XMLElement*);
+	void initNode();
+	bool runNode();
 
 	Publisher<TextMessage, TextMessagePubSubType>moveCommandPublisher_;
 };

@@ -15,8 +15,9 @@ public:
 	ModeController();
 
 private:
-	void init();
-	bool run();
+	void configNode(tinyxml2::XMLElement*);
+	void initNode();
+	bool runNode();
 
 	std::map<std::string, uint8_t> workerStatuses_;
 
