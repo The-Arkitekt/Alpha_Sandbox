@@ -85,12 +85,11 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 
 	// Allocate memory for read buffer, set size according to your needs
-	char read_buf[1];
+	char read_buf[1]{0};
 
 	// Normally you wouldn't do this memset() call, but since we will just receive
 	// ASCII data for this example, we'll set everything to 0 so we can
 	// call printf() easily.
-	//memset(&read_buf, '\0', sizeof(read_buf));
 
 	// Read bytes. The behaviour of read() (e.g. does it block?,
 	// how long does it block for?) depends on the configuration
@@ -98,8 +97,8 @@ bool SerialInterface::writeData(uint8_t* data) {
 	//
 	int i = 0;
 	int num_bytes = 0;
-	for(i = 0; i < (sizeof(msg)/sizeof(char)); i++) {
-		num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+	for(i = 0; i < 6; i++) {
+		num_bytes = read(serial_port, &read_buf, 1);
 
 		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
 		if (num_bytes < 0) {
@@ -112,7 +111,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
 	// print it to the screen like this!)
-	printf("Read %i bytes. Received message: %s", int(sizeof(read_buf)/sizeof(char)), read_buf);
+	//printf("Read %i bytes. Received message: %s", int(sizeof(read_buf)/sizeof(char)), read_buf);
 
 	close(serial_port);
 
