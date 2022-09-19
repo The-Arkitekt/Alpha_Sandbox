@@ -37,7 +37,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 	std::cout << "HWFlowControl: " << settings_.hwFlow << std::endl;
 	std::cout << "Baud: " << settings_.baud << std::endl;
 
-	int serial_port = open(settings_.device, O_RDWR);
+	int serial_port = open(settings_.device.c_str(), O_RDWR);
 
 	// create new termios struct
 	struct termios tty;
