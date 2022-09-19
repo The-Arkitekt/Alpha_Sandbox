@@ -67,8 +67,8 @@ bool SerialInterface::writeData(uint8_t* data) {
 	tty.c_oflag &= ~OPOST;															// Prevent special interpretation of output bytes (e.g. newline chars)
 	tty.c_oflag &= ~ONLCR;															// Prevent conversion of newline to carriage return/line feed
 
-	tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
-	tty.c_cc[VMIN] = 0;
+	tty.c_cc[VTIME] = 0;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+	tty.c_cc[VMIN] = 1;
 
 	// Set out baud rate 
 	cfsetospeed(&tty,settings_.baud);
@@ -85,22 +85,24 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 
 	// Allocate memory for read buffer, set size according to your needs
-	char read_buf[256];
+	char read_buf[1];
 
 	// Normally you wouldn't do this memset() call, but since we will just receive
 	// ASCII data for this example, we'll set everything to 0 so we can
 	// call printf() easily.
-	memset(&read_buf, '\0', sizeof(read_buf));
+	//memset(&read_buf, '\0', sizeof(read_buf));
 
 	// Read bytes. The behaviour of read() (e.g. does it block?,
 	// how long does it block for?) depends on the configuration
 	// settings above, specifically VMIN and VTIME
-	// This will loop until all of msg is read
+	//
+	int i = 0;
+	char read_str[10];
+	memset(&read_str, '\0', sizeof(read_str));
 	int num_bytes = 0;
-	char str[250];
-	memset(&str, '\0', sizeof(str));
-	while (num_bytes < 6) {
-		num_bytes += read(serial_port, &read_buf, sizeof(read_buf));
+	for(i = 0; i < 4; i++) {
+		num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+		strcat(read_str, read_buf);
 
 		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
 		if (num_bytes < 0) {
@@ -111,7 +113,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
 	// print it to the screen like this!)
-	printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
+	printf("Read %i bytes. Received message: %s", num_bytes, read_str);
 
 	close(serial_port);
 
