@@ -28,8 +28,7 @@ void SerialInterface::config() {
 	baudConfig->QueryIntText(&settings_.baud);
 }
 
-bool SerialInterface::writeData(uint8_t* data) {
-
+int SerialInterface::initPort() {
 	// open serial port
 	std::cout << "Device: " << settings_.device << std::endl;
 	std::cout << "Parity: " << settings_.parity << std::endl;
@@ -45,7 +44,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 	// Read in existing settings, and handle any error
 	if (tcgetattr(serial_port, &tty) != 0) {
 		printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
-		return false;
+		return -1;
 	}
 
 	// configure tty using configuration given
@@ -71,13 +70,20 @@ bool SerialInterface::writeData(uint8_t* data) {
 	tty.c_cc[VMIN] = 1;
 
 	// Set out baud rate 
-	cfsetospeed(&tty,settings_.baud);
+	cfsetospeed(&tty, settings_.baud);
 
 	// Save tty settings, also checking for error
 	if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
 		printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
-		return false;
+		return -1;
 	}
+
+	return serial_port;
+}
+
+bool SerialInterface::writeData(uint8_t* data) {
+
+	int serial_port = initPort();
 
 	// Write to serial port
 	unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };

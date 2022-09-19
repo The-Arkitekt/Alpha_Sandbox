@@ -16,6 +16,7 @@ public:
 	SerialInterface(const char*);
 
 	void config();
+	int initPort();
 	bool writeData(uint8_t*);
 	bool readData(uint8_t*);
 		
