@@ -98,7 +98,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 	//
 	int i = 0;
 	int num_bytes = 0;
-	for(i = 0; i < 4; i++) {
+	for(i = 0; i < (sizeof(msg)/sizeof(char)); i++) {
 		num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
 
 		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
@@ -112,7 +112,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
 	// print it to the screen like this!)
-	printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
+	printf("Read %i bytes. Received message: %s", int(sizeof(read_buf)/sizeof(char)), read_buf);
 
 	close(serial_port);
 
