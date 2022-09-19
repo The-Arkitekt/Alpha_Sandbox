@@ -109,6 +109,8 @@ bool SerialInterface::writeData(uint8_t* data) {
 			printf("Error reading: %s", strerror(errno));
 			return false;
 		}
+
+		std::cout << "Found a byte: " << read_str << std::endl;
 	}
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
