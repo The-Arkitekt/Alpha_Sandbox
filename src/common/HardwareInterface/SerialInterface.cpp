@@ -95,12 +95,18 @@ bool SerialInterface::writeData(uint8_t* data) {
 	// Read bytes. The behaviour of read() (e.g. does it block?,
 	// how long does it block for?) depends on the configuration
 	// settings above, specifically VMIN and VTIME
-	int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+	// This will loop until all of msg is read
+	int num_bytes = 0;
+	char str[250]
+	memset(&str '\0', sizeof(str));
+	while (num_bytes < 6) {
+		num_bytes += read(serial_port, &read_buf, sizeof(read_buf));
 
-	// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-	if (num_bytes < 0) {
-		printf("Error reading: %s", strerror(errno));
-		return false;
+		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
+		if (num_bytes < 0) {
+			printf("Error reading: %s", strerror(errno));
+			return false;
+		}
 	}
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
