@@ -23,7 +23,7 @@ private:
 	const char* configName_;
 
 	struct SerialSettings {
-		const char* device;
+		std::string device;
 		bool parity;
 		bool stopBit;
 		bool hwFlow;
