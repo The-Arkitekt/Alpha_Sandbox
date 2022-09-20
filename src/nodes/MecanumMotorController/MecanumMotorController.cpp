@@ -88,6 +88,8 @@ bool MecanumMotorController::applyMotorSpeeds() {
 							   static_cast<uint8_t>(motorSpeeds_[3])
 	};
 	
+	std::cout << int(data[0]) << std::endl;
+
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
 		return false;
