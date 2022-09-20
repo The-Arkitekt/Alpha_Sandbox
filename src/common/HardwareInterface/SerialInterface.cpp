@@ -103,12 +103,10 @@ bool SerialInterface::readData(std::vector<uint8_t>* readBuf, int numBytesToRead
 	if (serialPort_ < 0)
 		return false;
 
-	std::cout << "size of read_buf: " << readBuf->size() << std::endl;
-
 	// read size number of bytes one byte at a time
 	int numBytesTotal = 0;
 	int numBytes = 0;
-	uint8_t* readByte;
+	uint8_t readByte[1]{0};
 	while (numBytesTotal < numBytesToRead) {
 		numBytes = read(serialPort_, &readByte, 1);
 
