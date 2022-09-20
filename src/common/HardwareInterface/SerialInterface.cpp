@@ -74,6 +74,8 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	tty.c_oflag &= ~OPOST;															// Prevent special interpretation of output bytes (e.g. newline chars)
 	tty.c_oflag &= ~ONLCR;															// Prevent conversion of newline to carriage return/line feed
 
+	cfmakeraw(&tty);
+
 	tty.c_cc[VTIME] = vTime;    // time to block waiting for read data
 	tty.c_cc[VMIN] = vMin;		// minimum number of characters to recieve (blocks until all characters received)
 
