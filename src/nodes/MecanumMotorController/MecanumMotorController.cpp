@@ -79,7 +79,7 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 }
 
 bool MecanumMotorController::applyMotorSpeeds() {
-	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
+	std::cout << "Applying Motor Speeds: [" << motorSpeeds_[0] << "],[" << motorSpeeds_[1] << "],[" << motorSpeeds_[2] << "],[" << motorSpeeds_[3] << "]" << std::endl;
 	
 	// do hardware interface stuff here
 	std::vector<uint8_t> data{ static_cast<uint8_t>(motorSpeeds_[0]),
