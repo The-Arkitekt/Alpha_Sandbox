@@ -103,7 +103,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	int i = 0;
 	std::cout << "Num bytes read: " << readBuf.size() << ", message: ";
 	for (i = 0; i < readBuf.size(); i++) {
-		std::cout << int(readBuf[i]) << " ";
+		std::cout << int(int8_t(readBuf[i])) << " ";
 	}
 	std::cout << std::endl;
 
