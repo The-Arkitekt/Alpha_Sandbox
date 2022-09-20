@@ -100,6 +100,13 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	if (!serial.readData(&readBuf, 4))
 		return false;
 
+	int i = 0;
+	std::cout << "Num bytes read: " << readBuf.size() << ", message: ";
+	for (i = 0; i < readBuf.size(); i++) {
+		std::cout << int(readBuf[i]) << " ";
+	}
+	std::cout << std::endl;
+
 	serial.closePort();
 
 	return true;
