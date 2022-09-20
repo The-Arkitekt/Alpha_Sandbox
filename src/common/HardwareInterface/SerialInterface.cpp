@@ -67,7 +67,8 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	tty.c_lflag &= ~ECHONL;															// Disable new-line echo
 	tty.c_lflag &= ~ISIG;															// Disable interpretation of INTR, QUIT and SUSP
 	tty.c_iflag &= ~(IXON | IXOFF | IXANY);											// Turn off s/w flow ctrl
-	tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL);	// Disable any special handling of received bytes
+
+	tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);	// Disable any special handling of received bytes
 
 	tty.c_oflag &= ~OPOST;															// Prevent special interpretation of output bytes (e.g. newline chars)
 	tty.c_oflag &= ~ONLCR;															// Prevent conversion of newline to carriage return/line feed
