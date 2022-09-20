@@ -62,7 +62,7 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	tty.c_cflag |= CREAD | CLOCAL;													// Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
 	tty.c_lflag &= ~ICANON;
-	tty.c_lflag |= ECHO;															// Disable echo
+	tty.c_lflag &= ~ECHO;															// Disable echo
 	tty.c_lflag &= ~ECHOE;															// Disable erasure
 	tty.c_lflag &= ~ECHONL;															// Disable new-line echo
 	tty.c_lflag &= ~ISIG;															// Disable interpretation of INTR, QUIT and SUSP
@@ -100,7 +100,7 @@ bool SerialInterface::writeData(std::vector<int8_t> data) {
 		std::cout << int(data.data()[i]);
 	}
 	std::cout << " size: " << data.size() << std::endl;
-	unsigned char datamsg = 206;
+	unsigned char datamsg = -1;
 	std::cout << "Writing 206: " << int(datamsg) << std::endl;
 	write(serialPort_, &datamsg, 1);
 
