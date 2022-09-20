@@ -54,7 +54,7 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 		{1,  1, 1,  1},
 		{0,  0, 0,  0}
 	};
-	// create motor speeds array
+	// create motor speeds vector
 	motorSpeeds_[0] = 0;
 	motorSpeeds_[1] = 0;
 	motorSpeeds_[2] = 0;
@@ -80,36 +80,32 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 
 bool MecanumMotorController::applyMotorSpeeds() {
 	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
-	
+	/*
 	// do hardware interface stuff here
 	std::vector<uint8_t> data{ static_cast<uint8_t>(motorSpeeds_[0]),
 							   static_cast<uint8_t>(motorSpeeds_[1]),
 							   static_cast<uint8_t>(motorSpeeds_[2]),
 							   static_cast<uint8_t>(motorSpeeds_[3])
 	};
-	
-	std::cout << unsigned(data[0]) << std::endl;
-
+	*/
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
 		return false;
 
-	if (!serial.writeData(data))
+	if (!serial.writeData(motorSpeeds_))
 		return false;
 	
 	//TESTING
-	std::vector<uint8_t> readBuf;
+	std::vector<int8_t> readBuf;
 	if (!serial.readData(&readBuf, 4))
 		return false;
 
 	int i = 0;
 	std::cout << "Num bytes read: " << readBuf.size() << ", message: ";
-	std::vector<int8_t> speedReturn;
-	int16_t tmp;
 	for (i = 0; i < readBuf.size(); i++) {
 		std::cout << int(readBuf[i]);
 	}
-	std::cout << std::endl;
+	std::cout << std::endl;	
 
 	serial.closePort();
 

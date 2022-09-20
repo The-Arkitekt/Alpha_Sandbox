@@ -19,7 +19,7 @@ private:
 	void generateMotorSpeeds(MoveVector&);
 	bool applyMotorSpeeds();
 
-	int8_t motorSpeeds_[4]{0,0,0,0};
+	std::vector<int8_t> motorSpeeds_{0,0,0,0};
 
 	SerialInterface serial;
 

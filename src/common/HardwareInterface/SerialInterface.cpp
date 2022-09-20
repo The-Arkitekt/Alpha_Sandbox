@@ -87,7 +87,7 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	return serialPort_;
 }
 
-bool SerialInterface::writeData(std::vector<uint8_t> data) {
+bool SerialInterface::writeData(std::vector<int8_t> data) {
 	if (serialPort_ < 0)
 		return false;
 
@@ -96,7 +96,7 @@ bool SerialInterface::writeData(std::vector<uint8_t> data) {
 	int i = 0;
 	std::cout << "Message being written: ";
 	for (i = 0; i < data.size(); i++) {
-		std::cout << unsigned(data.data()[i]);
+		std::cout << int(data.data()[i]);
 	}
 	std::cout << " size: " << data.size() << std::endl;
 	write(serialPort_, data.data(), data.size());
@@ -104,14 +104,14 @@ bool SerialInterface::writeData(std::vector<uint8_t> data) {
 	return true;
 }
 
-bool SerialInterface::readData(std::vector<uint8_t>* readBuf, int numBytesToRead) {
+bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead) {
 	if (serialPort_ < 0)
 		return false;
 
 	// read size number of bytes one byte at a time
 	int numBytesTotal = 0;
 	int numBytes = 0;
-	uint8_t readByte[1]{0};
+	int8_t readByte[1]{0};
 	while (numBytesTotal < numBytesToRead) {
 		numBytes = read(serialPort_, &readByte, 1);
 
@@ -121,7 +121,7 @@ bool SerialInterface::readData(std::vector<uint8_t>* readBuf, int numBytesToRead
 			return false;
 		}
 
-		std::cout << "Byte read " << numBytes << ": " << unsigned(readByte[0]) << std::endl;
+		std::cout << "Byte read " << numBytes << ": " << int(readByte[0]) << std::endl;
 		readBuf->push_back(*readByte);
 		numBytesTotal++;
 	}

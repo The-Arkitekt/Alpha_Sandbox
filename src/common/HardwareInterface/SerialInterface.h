@@ -20,8 +20,8 @@ public:
 	void config();
 	int initPort(int, int);
 	void closePort();
-	bool writeData(std::vector<uint8_t>);
-	bool readData(std::vector<uint8_t>*, int);
+	bool writeData(std::vector<int8_t>);
+	bool readData(std::vector<int8_t>*, int);
 		
 private:
 	int getBaudMacro(int);
