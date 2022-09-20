@@ -6,6 +6,11 @@ SerialInterface::SerialInterface(const char* configName)
 	, configName_(configName)
 {}
 
+SerialInterface::~SerialInterface() {
+	if (serialPort_ > 0)
+		closePort();
+}
+
 void SerialInterface::config() {
 	tinyxml2::XMLDocument doc;
 	doc.LoadFile("../../../config/HardwareInterface.xml");
@@ -26,12 +31,10 @@ void SerialInterface::config() {
 	hwFlowConfig->QueryBoolText(&settings_.hwFlow);
 
 	tinyxml2::XMLElement* baudConfig = configuration->FirstChildElement("Baud");
-	int tmpBaud = 0;
-	baudConfig->QueryIntText(&tmpBaud);
-	settings_.baud = getBaud(tmpBaud);
+	baudConfig->QueryIntText(&settings_.baud);
 }
 
-int SerialInterface::initPort() {
+int SerialInterface::initPort(int vTime, int vMin) {
 	// open serial port
 	std::cout << "Device: " << settings_.device << std::endl;
 	std::cout << "Parity: " << settings_.parity << std::endl;
@@ -69,11 +72,11 @@ int SerialInterface::initPort() {
 	tty.c_oflag &= ~OPOST;															// Prevent special interpretation of output bytes (e.g. newline chars)
 	tty.c_oflag &= ~ONLCR;															// Prevent conversion of newline to carriage return/line feed
 
-	tty.c_cc[VTIME] = 0;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
-	tty.c_cc[VMIN] = 1;
+	tty.c_cc[VTIME] = vTime;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+	tty.c_cc[VMIN] = vMin;
 
 	// Set out baud rate 
-	cfsetospeed(&tty, settings_.baud);
+	cfsetospeed(&tty, getBaudMacro(settings_.baud));
 
 	// Save tty settings, also checking for error
 	if (tcsetattr(serialPort_, TCSANOW, &tty) != 0) {
@@ -85,47 +88,41 @@ int SerialInterface::initPort() {
 }
 
 bool SerialInterface::writeData(uint8_t* data) {
-
-	//int serialPort = initPort();
+	if (serialPort_ < 0)
+		return false;
 
 	// Write to serial port
-	unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	write(serialPort_, msg, sizeof(msg));
-
-	//close(serial_port);
+	//unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
+	write(serialPort_, data, sizeof(data));
 
 	return true;
 }
 
 bool SerialInterface::readData(uint8_t* buf) {
+	if (serialPort_ < 0)
+		return false;
 	// Allocate memory for read buffer, set size according to your needs
-	char read_buf[2]{ '\0','\0' };
-
-	//serialPort_ = initPort();
+	char read_buf[256];
+	memset(&read_buf, '\0', sizeof(read_buf));
 
 	// Read bytes. The behaviour of read() (e.g. does it block?,
 	// how long does it block for?) depends on the configuration
 	// settings above, specifically VMIN and VTIME
 	//
-	int i = 0;
-	int num_bytes = 0;
-	for (i = 0; i < 6; i++) {
-		num_bytes = read(serialPort_, &read_buf, 1);
+    int num_bytes = read(serialPort_, &read_buf, sizeof(read_buf));
 
-		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-		if (num_bytes < 0) {
-			printf("Error reading: %s", strerror(errno));
-			return false;
-		}
-
-		std::cout << "Found a byte: " << read_buf << std::endl;
+	// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
+	if (num_bytes < 0) {
+		printf("Error reading: %s", strerror(errno));
+		return false;
 	}
+
+	std::cout << "Found " << num_bytes <<  " bytes, message: " << read_buf << std::endl;
+	
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
 	// print it to the screen like this!)
 	//printf("Read %i bytes. Received message: %s", int(sizeof(read_buf)/sizeof(char)), read_buf);
-
-	//close(serialPort_);
 
 	return true;
 }	
@@ -134,8 +131,8 @@ void SerialInterface::closePort() {
 	close(serialPort_);
 }
 
-int SerialInterface::getBaud(int baud) {
-	switch (baud) {
+int SerialInterface::getBaudMacro(int baudValue) {
+	switch (baudValue) {
 	case 9600:
 		return B9600;
 	case 19200:

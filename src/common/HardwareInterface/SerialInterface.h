@@ -14,15 +14,16 @@ class SerialInterface {
 
 public:
 	SerialInterface(const char*);
+	~SerialInterface();
 
 	void config();
-	int initPort();
+	int initPort(int, int);
 	void closePort();
 	bool writeData(uint8_t*);
 	bool readData(uint8_t*);
 		
 private:
-	int getBaud(int baud);
+	int getBaudMacro(int);
 
 	int serialPort_;
 	const char* configName_;

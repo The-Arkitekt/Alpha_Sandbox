@@ -32,7 +32,8 @@ bool Worker::runNode() {
 
 	// check for messages
 	if (modeCommandSubscriber_.getNumMessages() > 0) {
-		modeCommand = modeCommandSubscriber_.popOldestMessage();
+		modeCommand = modeCommandSubscriber_.popNewestMessage();
+		modeCommandSubscriber_.clearMsgBuf();
 		// standby
 		if (modeCommand.data() == DataTypes::ModeTypes::STANDBY) {
 			if (!standingBy_) {

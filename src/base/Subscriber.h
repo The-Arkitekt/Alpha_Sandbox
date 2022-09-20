@@ -68,7 +68,7 @@ private:
             }
         }
 
-        std::list<MsgType> msgBuf_;
+        std::vector<MsgType> msgBuf_;
         int matched_;
         std::atomic_int samples_;
     private:
@@ -105,8 +105,19 @@ public:
 
     MsgType popOldestMessage() {
         MsgType ret = listener_.msgBuf_.front();
-        listener_.msgBuf_.pop_front();
+        listener_.msgBuf_.erase(listener_.msgBuf_.begin());
         return ret;
+    }
+
+    MsgType popNewestMessage() {
+        MsgType ret = listener_.msgBuf_.back();
+        listener_.msgBuf_.erase(listener_.msgBuf_.end() - 1);
+        return ret;
+    }
+
+    void clearMsgBuf() {
+        listener_.msgBuf_.clear();
+        listener_.msgBuf_.shrink_to_fit();
     }
 
 	bool init() {
