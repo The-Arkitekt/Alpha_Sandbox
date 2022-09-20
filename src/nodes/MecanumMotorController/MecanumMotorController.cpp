@@ -105,12 +105,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::vector<int8_t> speedReturn;
 	int16_t tmp;
 	for (i = 0; i < readBuf.size(); i++) {
-		if (readBuf[i] > std::numeric_limits<int8_t>::max())
-			speedReturn.push_back(-1 * (std::numeric_limits<int8_t>::max() - static_cast<int8_t>(readBuf[i])));
-		else
-			speedReturn.push_back(static_cast<int8_t>(readBuf[i]));
-		
-		std::cout << int(speedReturn.back());
+		std::cout << int(readBuf[i]);
 	}
 	std::cout << std::endl;
 
