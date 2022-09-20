@@ -62,7 +62,7 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	tty.c_cflag |= CREAD | CLOCAL;													// Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
 	tty.c_lflag &= ~ICANON;
-	tty.c_lflag &= ~ECHO;															// Disable echo
+	tty.c_lflag |= ECHO;															// Disable echo
 	tty.c_lflag &= ~ECHOE;															// Disable erasure
 	tty.c_lflag &= ~ECHONL;															// Disable new-line echo
 	tty.c_lflag &= ~ISIG;															// Disable interpretation of INTR, QUIT and SUSP
@@ -123,7 +123,6 @@ bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead)
 			printf("Error reading: %s", strerror(errno));
 			return false;
 		}
-
 		std::cout << "Byte read " << numBytes << ": " << int(readByte[0]) << std::endl;
 		readBuf->push_back(*readByte);
 		numBytesTotal++;
