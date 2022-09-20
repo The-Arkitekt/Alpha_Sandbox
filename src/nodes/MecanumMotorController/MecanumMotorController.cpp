@@ -79,7 +79,7 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 }
 
 bool MecanumMotorController::applyMotorSpeeds() {
-	std::cout << "Applying Motor Speeds: [" << motorSpeeds_[0] << "],[" << motorSpeeds_[1] << "],[" << motorSpeeds_[2] << "],[" << motorSpeeds_[3] << "]" << std::endl;
+	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
 	
 	// do hardware interface stuff here
 	std::vector<uint8_t> data{ static_cast<uint8_t>(motorSpeeds_[0]),
@@ -88,8 +88,6 @@ bool MecanumMotorController::applyMotorSpeeds() {
 							   static_cast<uint8_t>(motorSpeeds_[3])
 	};
 	
-
-	std::cout << int(data[0]) << int(data[1]) << int(data[2]) << int(data[3]) << std::endl;
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
 		return false;
@@ -105,9 +103,14 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	int i = 0;
 	std::cout << "Num bytes read: " << readBuf.size() << ", message: ";
 	std::vector<int8_t> speedReturn;
+	int16_t tmp;
 	for (i = 0; i < readBuf.size(); i++) {
-		speedReturn.push_back(static_cast<int8_t>(readBuf[i]));
-		//std::cout << int(speedReturn.back());
+		if (readBuf[i] > std::numeric_limits<int8_t>::max())
+			speedReturn.push_back(-1 * (std::numeric_limits<int8_t>::max() - static_cast<int8_t>(readBuf[i])));
+		else
+			speedReturn.push_back(static_cast<int8_t>(readBuf[i]));
+		
+		std::cout << int(speedReturn.back());
 	}
 	std::cout << std::endl;
 
