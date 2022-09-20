@@ -93,7 +93,7 @@ bool SerialInterface::writeData(std::vector<uint8_t> data) {
 
 	// Write to serial port
 	//unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	std::cout << "Message size: " << data.size() << std::endl;
+	std::cout << "Message: " << data.data() << " size: " << data.size() << std::endl;
 	write(serialPort_, data.data(), data.size());
 
 	return true;
@@ -116,7 +116,7 @@ bool SerialInterface::readData(std::vector<uint8_t>* readBuf, int numBytesToRead
 			return false;
 		}
 
-		std::cout << "read " << numBytes << ": " << readByte[0] << std::endl;
+		std::cout << "read " << numBytes << ": " << int(readByte[0]) << std::endl;
 		readBuf->push_back(*readByte);
 		numBytesTotal++;
 	}
