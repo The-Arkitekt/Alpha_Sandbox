@@ -72,8 +72,8 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	tty.c_oflag &= ~OPOST;															// Prevent special interpretation of output bytes (e.g. newline chars)
 	tty.c_oflag &= ~ONLCR;															// Prevent conversion of newline to carriage return/line feed
 
-	tty.c_cc[VTIME] = vTime;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
-	tty.c_cc[VMIN] = vMin;
+	tty.c_cc[VTIME] = vTime;    // time to block waiting for read data
+	tty.c_cc[VMIN] = vMin;		// minimum number of characters to recieve (blocks until all characters received)
 
 	// Set out baud rate 
 	cfsetospeed(&tty, getBaudMacro(settings_.baud));
@@ -93,6 +93,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	// Write to serial port
 	//unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
+	std::cout << "Message size: " << sizeof(data) << std::endl;
 	write(serialPort_, data, sizeof(data));
 
 	return true;
@@ -101,6 +102,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 bool SerialInterface::readData(uint8_t* buf) {
 	if (serialPort_ < 0)
 		return false;
+
 	// Allocate memory for read buffer, set size according to your needs
 	char read_buf[256];
 	memset(&read_buf, '\0', sizeof(read_buf));

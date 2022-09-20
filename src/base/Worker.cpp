@@ -59,8 +59,8 @@ bool Worker::runNode() {
 			statusPublisher_.publish(status);
 
 		// if status is DOWN, return
-		if (status.data() == DataTypes::StatusTypes::DOWN)
-			return false ;
+		if (status.data() == DataTypes::StatusTypes::DOWN) 
+			return false;
 	}	
 	return true;
 }

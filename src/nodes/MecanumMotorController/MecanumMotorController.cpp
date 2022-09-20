@@ -24,8 +24,9 @@ bool MecanumMotorController::runWorker() {
 		generateMotorSpeeds(moveVector);
 
 		// apply motor speeds
-		if (!applyMotorSpeeds())
+		if (!applyMotorSpeeds()) {
 			return false;
+		}
 	}
 	return true;
 }
@@ -86,13 +87,16 @@ bool MecanumMotorController::applyMotorSpeeds() {
 					 uint8_t(motorSpeeds_[3])
 	};
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
-	serial.initPort(1, 0);
+	if (serial.initPort(1, 0) < 0)
+		return false;
+
 	if (!serial.writeData(data))
 		return false;
 	
 	//TESTING
 	if (!serial.readData(nullptr))
 		return false;
+
 	serial.closePort();
 
 	return true;
