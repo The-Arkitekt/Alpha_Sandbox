@@ -87,7 +87,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 					 uint8_t(motorSpeeds_[3])
 	};
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
-	if (serial.initPort(1, 0) < 0)
+	if (serial.initPort(10, 0) < 0)
 		return false;
 
 	if (!serial.writeData(data))

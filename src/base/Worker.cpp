@@ -55,7 +55,7 @@ bool Worker::runNode() {
 			status.data() = DataTypes::StatusTypes::DOWN;
 
 		// publish status
-		if (!standingBy_)
+		if (!standingBy_) 
 			statusPublisher_.publish(status);
 
 		// if status is DOWN, return
