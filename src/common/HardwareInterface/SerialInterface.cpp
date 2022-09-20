@@ -89,13 +89,16 @@ bool SerialInterface::writeData(uint8_t* data) {
 	unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
 	write(serial_port, msg, sizeof(msg));
 
+	close(serial_port);
 
+	return true;
+}
+
+bool SerialInterface::readData(uint8_t* buf) {
 	// Allocate memory for read buffer, set size according to your needs
-	char read_buf[2]{'\0','\0'};
+	char read_buf[2]{ '\0','\0' };
 
-	// Normally you wouldn't do this memset() call, but since we will just receive
-	// ASCII data for this example, we'll set everything to 0 so we can
-	// call printf() easily.
+	int serial_port = initPort();
 
 	// Read bytes. The behaviour of read() (e.g. does it block?,
 	// how long does it block for?) depends on the configuration
@@ -103,7 +106,7 @@ bool SerialInterface::writeData(uint8_t* data) {
 	//
 	int i = 0;
 	int num_bytes = 0;
-	for(i = 0; i < 6; i++) {
+	for (i = 0; i < 6; i++) {
 		num_bytes = read(serial_port, &read_buf, 1);
 
 		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
@@ -121,10 +124,6 @@ bool SerialInterface::writeData(uint8_t* data) {
 
 	close(serial_port);
 
-	return true;
-}
-
-bool SerialInterface::readData(uint8_t* buf) {
 	return true;
 }	
 
