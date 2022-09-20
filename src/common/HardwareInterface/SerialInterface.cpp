@@ -118,14 +118,15 @@ bool SerialInterface::readData(std::vector<uint8_t>* readBuf, int numBytesToRead
 			return false;
 		}
 		readBuf->push_back(*readByte);
+		numBytesTotal++;
 	}
 
-	
-	
-
-	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
-	// print it to the screen like this!)
-	//printf("Read %i bytes. Received message: %s", int(sizeof(read_buf)/sizeof(char)), read_buf);
+	int i = 0;
+	std::cout << "Num bytes read: " << numBytesTotal << ", message: ";
+	for (i = 0; i < numBytesTotal; i++) {
+		std::cout << (*readBuf)[i] << " ";
+	}
+	std::cout << std::endl;
 
 	return true;
 }	
