@@ -17,12 +17,15 @@ public:
 
 	void config();
 	int initPort();
+	void closePort();
 	bool writeData(uint8_t*);
 	bool readData(uint8_t*);
 		
 private:
-	const char* configName_;
+	int getBaud(int baud);
 
+	int serialPort_;
+	const char* configName_;
 	struct SerialSettings {
 		std::string device;
 		bool parity;
@@ -30,8 +33,6 @@ private:
 		bool hwFlow;
 		int baud;
 	} settings_;
-
-	int getBaud(int baud);
 };
 
 #endif // SERIALINTERFACE

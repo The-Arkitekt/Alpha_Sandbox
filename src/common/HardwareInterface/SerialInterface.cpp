@@ -2,7 +2,8 @@
 #include "../xmlParser/tinyxml2/tinyxml2.h"
 
 SerialInterface::SerialInterface(const char* configName) 
-	: configName_(configName)
+	: serialPort_(-1)
+	, configName_(configName)
 {}
 
 void SerialInterface::config() {
@@ -25,7 +26,9 @@ void SerialInterface::config() {
 	hwFlowConfig->QueryBoolText(&settings_.hwFlow);
 
 	tinyxml2::XMLElement* baudConfig = configuration->FirstChildElement("Baud");
-	baudConfig->QueryIntText(&settings_.baud);
+	int tmpBaud = 0;
+	baudConfig->QueryIntText(&tmpBaud);
+	settings_.baud = getBaud(tmpBaud);
 }
 
 int SerialInterface::initPort() {
@@ -36,13 +39,13 @@ int SerialInterface::initPort() {
 	std::cout << "HWFlowControl: " << settings_.hwFlow << std::endl;
 	std::cout << "Baud: " << settings_.baud << std::endl;
 
-	int serial_port = open(settings_.device.c_str(), O_RDWR);
+	serialPort_ = open(settings_.device.c_str(), O_RDWR);
 
 	// create new termios struct
 	struct termios tty;
 
 	// Read in existing settings, and handle any error
-	if (tcgetattr(serial_port, &tty) != 0) {
+	if (tcgetattr(serialPort_, &tty) != 0) {
 		printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
 		return -1;
 	}
@@ -73,23 +76,23 @@ int SerialInterface::initPort() {
 	cfsetospeed(&tty, settings_.baud);
 
 	// Save tty settings, also checking for error
-	if (tcsetattr(serial_port, TCSANOW, &tty) != 0) {
+	if (tcsetattr(serialPort_, TCSANOW, &tty) != 0) {
 		printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
 		return -1;
 	}
 
-	return serial_port;
+	return serialPort_;
 }
 
 bool SerialInterface::writeData(uint8_t* data) {
 
-	int serial_port = initPort();
+	//int serialPort = initPort();
 
 	// Write to serial port
 	unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	write(serial_port, msg, sizeof(msg));
+	write(serialPort_, msg, sizeof(msg));
 
-	close(serial_port);
+	//close(serial_port);
 
 	return true;
 }
@@ -98,7 +101,7 @@ bool SerialInterface::readData(uint8_t* buf) {
 	// Allocate memory for read buffer, set size according to your needs
 	char read_buf[2]{ '\0','\0' };
 
-	int serial_port = initPort();
+	//serialPort_ = initPort();
 
 	// Read bytes. The behaviour of read() (e.g. does it block?,
 	// how long does it block for?) depends on the configuration
@@ -107,7 +110,7 @@ bool SerialInterface::readData(uint8_t* buf) {
 	int i = 0;
 	int num_bytes = 0;
 	for (i = 0; i < 6; i++) {
-		num_bytes = read(serial_port, &read_buf, 1);
+		num_bytes = read(serialPort_, &read_buf, 1);
 
 		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
 		if (num_bytes < 0) {
@@ -122,12 +125,16 @@ bool SerialInterface::readData(uint8_t* buf) {
 	// print it to the screen like this!)
 	//printf("Read %i bytes. Received message: %s", int(sizeof(read_buf)/sizeof(char)), read_buf);
 
-	close(serial_port);
+	//close(serialPort_);
 
 	return true;
 }	
 
-int getBaud(int baud) {
+void SerialInterface::closePort() {
+	close(serialPort_);
+}
+
+int SerialInterface::getBaud(int baud) {
 	switch (baud) {
 	case 9600:
 		return B9600;
