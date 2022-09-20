@@ -89,7 +89,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	};
 	
 
-	std::cout << data[0] << data[1] << data[2] << data[3] << std::endl;
+	std::cout << uint16_t(data[0]) << uint16_t(data[1]) << uint16_t(data[2]) << uint16_t(data[3]) << std::endl;
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
 		return false;
