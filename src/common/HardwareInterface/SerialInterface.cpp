@@ -112,7 +112,7 @@ bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead)
 	// read size number of bytes one byte at a time
 	int numBytesTotal = 0;
 	int numBytes = 0;
-	int8_t readByte[1]{0};
+	char readByte[1]{0};
 	while (numBytesTotal < numBytesToRead) {
 		numBytes = read(serialPort_, &readByte, 1);
 
