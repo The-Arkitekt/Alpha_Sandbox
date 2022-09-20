@@ -86,6 +86,9 @@ bool MecanumMotorController::applyMotorSpeeds() {
 					 uint8_t(motorSpeeds_[3])
 	};
 	serial.writeData(data);
+	
+	//TESTING
+	serial.readData(nullptr);
 
 
 	return true;
