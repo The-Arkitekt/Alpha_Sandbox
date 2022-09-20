@@ -99,7 +99,8 @@ bool SerialInterface::writeData(std::vector<int8_t> data) {
 		std::cout << int(data.data()[i]);
 	}
 	std::cout << " size: " << data.size() << std::endl;
-	write(serialPort_, data.data(), data.size());
+	char datamsg = 206;
+	write(serialPort_, &datamsg, 1);
 
 	return true;
 }
