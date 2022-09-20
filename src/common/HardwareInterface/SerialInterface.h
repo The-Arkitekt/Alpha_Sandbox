@@ -19,8 +19,8 @@ public:
 	void config();
 	int initPort(int, int);
 	void closePort();
-	bool writeData(uint8_t*);
-	bool readData(uint8_t*);
+	bool writeData(uint8_t*, uint8_t);
+	bool readData(uint8_t*, uint8_t);
 		
 private:
 	int getBaudMacro(int);

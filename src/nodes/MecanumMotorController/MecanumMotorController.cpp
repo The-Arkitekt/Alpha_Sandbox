@@ -90,11 +90,11 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	if (serial.initPort(10, 0) < 0)
 		return false;
 
-	if (!serial.writeData(data))
+	if (!serial.writeData(data, sizeof(data)/sizeof(data[0])))
 		return false;
 	
 	//TESTING
-	if (!serial.readData(nullptr))
+	if (!serial.readData(nullptr, 0))
 		return false;
 
 	serial.closePort();

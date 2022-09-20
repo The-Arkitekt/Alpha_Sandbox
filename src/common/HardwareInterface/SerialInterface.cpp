@@ -87,19 +87,19 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	return serialPort_;
 }
 
-bool SerialInterface::writeData(uint8_t* data) {
+bool SerialInterface::writeData(uint8_t* data, uint8_t size) {
 	if (serialPort_ < 0)
 		return false;
 
 	// Write to serial port
 	//unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	std::cout << "Message size: " << sizeof(data) << std::endl;
-	write(serialPort_, data, sizeof(data));
+	std::cout << "Message size: " << size*sizeof(data) << std::endl;
+	write(serialPort_, data, size*sizeof(data));
 
 	return true;
 }
 
-bool SerialInterface::readData(uint8_t* buf) {
+bool SerialInterface::readData(uint8_t* buf, uint8_t size) {
 	if (serialPort_ < 0)
 		return false;
 
