@@ -82,13 +82,11 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
 	
 	// do hardware interface stuff here
-	std::vector<uint8_t> data{ uint8_t(motorSpeeds_[0]),
-							   uint8_t(motorSpeeds_[1]),
-							   uint8_t(motorSpeeds_[2]),
-							   uint8_t(motorSpeeds_[3])
+	std::vector<uint8_t> data{ static_cast<uint8_t>(motorSpeeds_[0]),
+							   static_cast<uint8_t>(motorSpeeds_[1]),
+							   static_cast<uint8_t>(motorSpeeds_[2]),
+							   static_cast<uint8_t>(motorSpeeds_[3])
 	};
-
-	std::cout << "Printing data after unsigned cast: " << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << std::endl;
 	
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
@@ -106,7 +104,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::cout << "Num bytes read: " << readBuf.size() << ", message: ";
 	std::vector<int8_t> speedReturn;
 	for (i = 0; i < readBuf.size(); i++) {
-		speedReturn.push_back(int8_t(readBuf[i]));
+		speedReturn.push_back(static_cast<int8_t>(readBuf[i]));
 		std::cout << int(speedReturn.back());
 	}
 	std::cout << std::endl;
