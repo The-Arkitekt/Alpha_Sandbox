@@ -105,7 +105,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::vector<int8_t> speedReturn;
 	int16_t tmp;
 	for (i = 0; i < readBuf.size(); i++) {
-		std::cout << int(readBuf[i]);
+		std::cout << int16_t(readBuf[i]);
 	}
 	std::cout << std::endl;
 
