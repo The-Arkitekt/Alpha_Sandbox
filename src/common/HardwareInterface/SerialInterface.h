@@ -2,7 +2,8 @@
 #define SERIALINTERFACE_H
 
 #include <iostream>
-#include <string>
+#include <vector>
+
 
 #include <stdint.h>
 #include <fcntl.h>
@@ -19,8 +20,8 @@ public:
 	void config();
 	int initPort(int, int);
 	void closePort();
-	bool writeData(uint8_t*, uint8_t);
-	bool readData(uint8_t*, uint8_t);
+	bool writeData(std::vector<uint8_t>);
+	bool readData(std::vector<uint8_t>*, int);
 		
 private:
 	int getBaudMacro(int);

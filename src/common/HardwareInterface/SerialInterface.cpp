@@ -87,39 +87,40 @@ int SerialInterface::initPort(int vTime, int vMin) {
 	return serialPort_;
 }
 
-bool SerialInterface::writeData(uint8_t* data, uint8_t size) {
+bool SerialInterface::writeData(std::vector<uint8_t> data) {
 	if (serialPort_ < 0)
 		return false;
 
 	// Write to serial port
 	//unsigned char msg[] = { 'H', 'e', 'l', 'l', 'o', '\r' };
-	std::cout << "Message size: " << size*sizeof(data) << std::endl;
-	write(serialPort_, data, size*sizeof(data));
+	std::cout << "Message size: " << data.size() << std::endl;
+	write(serialPort_, data.data(), data.size());
 
 	return true;
 }
 
-bool SerialInterface::readData(uint8_t* buf, uint8_t size) {
+bool SerialInterface::readData(std::vector<uint8_t>* readBuf, int numBytesToRead) {
 	if (serialPort_ < 0)
 		return false;
 
-	// Allocate memory for read buffer, set size according to your needs
-	char read_buf[256];
-	memset(&read_buf, '\0', sizeof(read_buf));
+	std::cout << "size of read_buf: " << readBuf->size() << std::endl;
 
-	// Read bytes. The behaviour of read() (e.g. does it block?,
-	// how long does it block for?) depends on the configuration
-	// settings above, specifically VMIN and VTIME
-	//
-    int num_bytes = read(serialPort_, &read_buf, sizeof(read_buf));
+	// read size number of bytes one byte at a time
+	int numBytesTotal = 0;
+	int numBytes = 0;
+	uint8_t* readByte;
+	while (numBytesTotal < numBytesToRead) {
+		numBytes = read(serialPort_, &readByte, 1);
 
-	// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-	if (num_bytes < 0) {
-		printf("Error reading: %s", strerror(errno));
-		return false;
+		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
+		if (numBytes < 0) {
+			printf("Error reading: %s", strerror(errno));
+			return false;
+		}
+		readBuf->push_back(*readByte);
 	}
 
-	std::cout << "Found " << num_bytes <<  " bytes, message: " << read_buf << std::endl;
+	
 	
 
 	// Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and

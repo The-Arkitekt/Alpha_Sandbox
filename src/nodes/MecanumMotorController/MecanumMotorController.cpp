@@ -48,11 +48,12 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 	*	- brake <-- motor speed value set to 0
 	*/
 	// create transfer function matrix IGNORING ROTATION FOR NOW
-	std::array <std::array<int8_t, 4>, 3> transferMatrix{ {
-														{1, -1, 1, -1},
-														{1,  1, 1,  1},
-														{0,  0, 0,  0}
-												  } };
+	std::vector <std::vector<int8_t>> transferMatrix
+	{ 
+		{1, -1, 1, -1},
+		{1,  1, 1,  1},
+		{0,  0, 0,  0}
+	};
 	// create motor speeds array
 	motorSpeeds_[0] = 0;
 	motorSpeeds_[1] = 0;
@@ -81,20 +82,22 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
 	
 	// do hardware interface stuff here
-	uint8_t data[4]{ uint8_t(motorSpeeds_[0]),
-					 uint8_t(motorSpeeds_[1]),
-					 uint8_t(motorSpeeds_[2]),
-					 uint8_t(motorSpeeds_[3])
+	std::vector<uint8_t> data{ uint8_t(motorSpeeds_[0]),
+							   uint8_t(motorSpeeds_[1]),
+							   uint8_t(motorSpeeds_[2]),
+							   uint8_t(motorSpeeds_[3])
 	};
+	
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
 		return false;
 
-	if (!serial.writeData(data, sizeof(data)/sizeof(data[0])))
+	if (!serial.writeData(data))
 		return false;
 	
 	//TESTING
-	if (!serial.readData(nullptr, 0))
+	std::vector<uint8_t> readBuf;
+	if (!serial.readData(&readBuf, 4))
 		return false;
 
 	serial.closePort();

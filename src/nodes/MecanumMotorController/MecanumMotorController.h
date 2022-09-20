@@ -1,7 +1,7 @@
 #ifndef MECANUMMOTORCONTROLLER_H
 #define MECANUMMOTORCONTROLLER_H
 
-#include <array>
+#include <vector>
 
 #include "../../base/Worker.h"
 #include "../../../messages/MoveVector/MoveVectorPubSubTypes.h"
