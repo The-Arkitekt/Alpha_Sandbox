@@ -87,13 +87,13 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::vector<int8_t> test{ 1 };
 	if (!serial.writeData(test))
 		return false;
-	/*
+	
 	std::vector<int8_t> readBuf;
 	if (!serial.readData(&readBuf, 1))
 		return false;
 
 	std::cout << std::endl;	
-	*/
+	
 	serial.closePort();
 	return true;
 }
