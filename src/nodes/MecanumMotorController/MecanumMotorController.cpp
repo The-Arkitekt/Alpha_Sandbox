@@ -83,10 +83,11 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
 	if (serial.initPort(10, 0) < 0)
 		return false;
+	/*
 	std::vector<int8_t> test{ 1 };
 	if (!serial.writeData(test))
 		return false;
-	/*
+	*/
 	std::vector<int8_t> readBuf;
 	if (!serial.readData(&readBuf, 1))
 		return false;
@@ -97,7 +98,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 		std::cout << int(readBuf[i]);
 	}
 	std::cout << std::endl;	
-	*/
+	
 	serial.closePort();
 	return true;
 }
