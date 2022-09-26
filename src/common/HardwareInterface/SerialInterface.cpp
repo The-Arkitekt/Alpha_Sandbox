@@ -97,7 +97,7 @@ bool SerialInterface::writeData(std::vector<int8_t> data) {
 
 	// Write to serial port
 	//write(serialPort_, data.data(), data.size());
-	unsigned char msg[]{ 1 };
+	int8_t msg[]{1};
 	write(serialPort_, msg, 1);
 
 	return true;
