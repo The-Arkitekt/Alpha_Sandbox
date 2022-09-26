@@ -97,7 +97,7 @@ bool SerialInterface::writeData(std::vector<int8_t> data) {
 
 	// Write to serial port
 	//write(serialPort_, data.data(), data.size());
-	int8_t msg[]{1};
+	int8_t msg[]{-1};
 	write(serialPort_, msg, 1);
 
 	return true;
@@ -110,7 +110,7 @@ bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead)
 	// read size number of bytes one byte at a time
 	int numBytesTotal = 0;
 	int numBytes = 0;
-	unsigned char readByte[1]{2};
+	unsigned char readByte[1]{0};
 	while (numBytesTotal < numBytesToRead) {
 		numBytes = read(serialPort_, &readByte, 1);
 
@@ -119,7 +119,7 @@ bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead)
 			printf("Error reading: %s", strerror(errno));
 			return false;
 		} 
-		std::cout << "Byte read " << numBytes << ": " << uint8_t(readByte[0]) << std::endl;
+		std::cout << "Byte read " << numBytes << ": " << int(readByte[0]) << std::endl;
 		readBuf->push_back(*readByte);
 		numBytesTotal++;
 	}
