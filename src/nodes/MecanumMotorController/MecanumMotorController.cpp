@@ -85,6 +85,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 		return false;
 	
 	int8_t writeBuf[1]{ -1 };
+	std::cout << "Data being written: " << int((uint8_t)writeBuf[0]) << std::endl;
 	if (!serial.writeData((uint8_t*)writeBuf, 1))
 		return false;
 	
