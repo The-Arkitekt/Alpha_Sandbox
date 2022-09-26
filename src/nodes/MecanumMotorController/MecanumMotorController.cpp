@@ -97,7 +97,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	std::cout << "Data Read: ";
 	int i = 0;
 	for (i = 0; i < bytesRead; i++)
-		std::cout << readBuf[i] << ", ";
+		std::cout << int(readBuf[i]) << ", ";
 
 	std::cout << std::endl;
 	
