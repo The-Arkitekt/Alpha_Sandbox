@@ -113,13 +113,6 @@ bool SerialInterface::writeData(uint8_t* data, int numBytesToWrite) {
 		printf("Error reading: %s", strerror(errno));
 	} 	
 
-	std::cout << "Data Read: ";
-	int i = 0;
-	for (i = 0; i < numBytes; i++)
-		std::cout << int(readBuf[i]) << ", ";
-
-	std::cout << std::endl;
-
 	return numBytes;
 }
 

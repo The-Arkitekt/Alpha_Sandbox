@@ -89,8 +89,8 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	if (!serial.writeData((uint8_t*)writeBuf, 1))
 		return false;
 	
-	uint8_t readBuf[1]{ 0 };
-	int bytesRead = serial.readData(readBuf, 1);
+	int8_t readBuf[1]{ 0 };
+	int bytesRead = serial.readData((uint8_t*)readBuf, 1);
 	if (bytesRead < 0)
 		return false;
 	
