@@ -19,12 +19,13 @@ void MoveCommandHelper::initNode() {
 
 bool MoveCommandHelper::runNode() {
 	// get user input
-	int input;
+	int input = 0;
 	TextMessage msg;
 	
 	initscr();
 	clear();
 	cbreak();
+	timeout(1);
 
 	printw("\nEnter Command: \n> ");
 	flushinp();
