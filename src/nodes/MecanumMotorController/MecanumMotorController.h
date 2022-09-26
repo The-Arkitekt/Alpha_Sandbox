@@ -24,6 +24,8 @@ private:
 	SerialInterface serial;
 
 	Subscriber<MoveVector, MoveVectorPubSubType>vectorMoveSubscriber_;
+
+	int feedBackBytes_;
 };
 
 #endif // MECANUMMOTORCONTROLLER_H

@@ -81,16 +81,20 @@ void MecanumMotorController::generateMotorSpeeds(MoveVector& msg) {
 bool MecanumMotorController::applyMotorSpeeds() {
 	std::cout << "Applying Motor Speeds: [" << int(motorSpeeds_[0]) << "],[" << int(motorSpeeds_[1]) << "],[" << int(motorSpeeds_[2]) << "],[" << int(motorSpeeds_[3]) << "]" << std::endl;
 	//initialize serial port to have a max 100 ms blocking and no byte minimum
-	if (serial.initPort(10, 4) < 0)
+	if (serial.initPort(10, 8) < 0)
 		return false;
 	
-	//int8_t writeBuf[1]{ -1 };
-	//std::cout << "Data being written: " << int((uint8_t)writeBuf[0]) << std::endl;
+	// send move command
 	if (!serial.writeData((uint8_t*)motorSpeeds_.data(), 4))
 		return false;
 	
+	/*
+		The following read operations are for testing
+
+		So far, they are not necessary in the final design
+	*/
 	int8_t readBuf[4]{ 0 };
-	int bytesRead = serial.readData((uint8_t*)readBuf, 4);
+	int bytesRead = serial.readData((uint8_t*)readBuf, 8);
 	if (bytesRead < 0)
 		return false;
 	
@@ -105,4 +109,6 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	serial.closePort();
 	return true;
 }
+
+
 
