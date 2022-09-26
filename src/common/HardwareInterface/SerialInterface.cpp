@@ -119,7 +119,7 @@ bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead)
 			printf("Error reading: %s", strerror(errno));
 			return false;
 		} 
-		std::cout << "Byte read " << numBytes << ": " << int(readByte[0]) << std::endl;
+		std::cout << "Byte read " << numBytes << ": " << int(int8_t(readByte[0])) << std::endl;
 		readBuf->push_back(*readByte);
 		numBytesTotal++;
 	}
