@@ -93,7 +93,7 @@ bool MecanumMotorController::applyMotorSpeeds() {
 
 		So far, they are not necessary in the final design
 	*/
-	int8_t readBuf[4]{ 0 };
+	int8_t readBuf[8]{ 0 };
 	int bytesRead = serial.readData((uint8_t*)readBuf, 8);
 	if (bytesRead < 0)
 		return false;
