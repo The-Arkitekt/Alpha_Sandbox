@@ -118,6 +118,8 @@ bool SerialInterface::writeData(uint8_t* data, int numBytesToWrite) {
 	for (i = 0; i < numBytes; i++)
 		std::cout << int(readBuf[i]) << ", ";
 
+	std::cout << std::endl;
+
 	return numBytes;
 }
 
