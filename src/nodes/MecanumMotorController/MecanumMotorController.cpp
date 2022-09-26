@@ -84,15 +84,21 @@ bool MecanumMotorController::applyMotorSpeeds() {
 	if (serial.initPort(10, 0) < 0)
 		return false;
 	
-	std::vector<int8_t> test{ 1 };
-	if (!serial.writeData(test))
+	int8_t writeBuf[1]{ -1 };
+	if (!serial.writeData((uint8_t*)writeBuf, 1))
 		return false;
 	
-	std::vector<int8_t> readBuf;
-	if (!serial.readData(&readBuf, 1))
+	int8_t readBuf[1]{ 0 };
+	if (serial.readData((uint8_t*)readBuf, 1) < 0)
 		return false;
 
-	std::cout << std::endl;	
+	// print out read buffer
+	std::cout << "Data Read: ";
+	int i = 0;
+	for (i = 0; i < 1; i++)
+		std::cout << readBuf[i] << ", ";
+
+	std::cout << std::endl;
 	
 	serial.closePort();
 	return true;

@@ -90,41 +90,30 @@ int SerialInterface::initPort(int vTime, int vMin) {
 
 	return serialPort_;
 }
-
-bool SerialInterface::writeData(std::vector<int8_t> data) {
+bool SerialInterface::writeData(uint8_t* data, int numBytesToWrite) {
 	if (serialPort_ < 0)
 		return false;
 
 	// Write to serial port
-	//write(serialPort_, data.data(), data.size());
-	int8_t msg[]{-1};
-	write(serialPort_, msg, 1);
+	write(serialPort_, data, numBytesToWrite);
 
 	return true;
 }
 
-bool SerialInterface::readData(std::vector<int8_t>* readBuf, int numBytesToRead) {
+ int SerialInterface::readData(uint8_t* readBuf, int numBytesToRead) {
 	if (serialPort_ < 0)
 		return false;
 
 	// read size number of bytes one byte at a time
-	int numBytesTotal = 0;
-	int numBytes = 0;
-	unsigned char readByte[1]{0};
-	while (numBytesTotal < numBytesToRead) {
-		numBytes = read(serialPort_, &readByte, 1);
+	int numBytes = 0;	
+	numBytes = read(serialPort_, &readBuf, numBytesToRead);
 
-		// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-		if (numBytes < 0) {
-			printf("Error reading: %s", strerror(errno));
-			return false;
-		} 
-		std::cout << "Byte read " << numBytes << ": " << int(int8_t(readByte[0])) << std::endl;
-		readBuf->push_back(*readByte);
-		numBytesTotal++;
-	}
-	return true;
-}	
+	// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
+	if (numBytes < 0) {
+		printf("Error reading: %s", strerror(errno));
+	} 	
+	return numBytes;
+}
 
 void SerialInterface::closePort() {
 	close(serialPort_);
