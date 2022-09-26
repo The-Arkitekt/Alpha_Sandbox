@@ -25,7 +25,6 @@ bool MoveCommandHelper::runNode() {
 	initscr();
 	clear();
 	cbreak();
-	timeout(1);
 
 	printw("\nEnter Command: \n> ");
 	flushinp();
