@@ -106,7 +106,7 @@ bool SerialInterface::writeData(uint8_t* data, int numBytesToWrite) {
 
 	// read size number of bytes one byte at a time
 	int numBytes = 0;	
-	numBytes = read(serialPort_, &readBuf, numBytesToRead);
+	numBytes = read(serialPort_, readBuf, numBytesToRead);
 
 	// n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
 	if (numBytes < 0) {
